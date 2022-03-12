@@ -26,7 +26,7 @@ jobs:
         APPLE_ID: ${{ secrets.APPLE_ID }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-      run: ./.github/workflows/scrips/build-mac.sh
+      run: ./.github/workflows/scripts/build-mac.sh
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
