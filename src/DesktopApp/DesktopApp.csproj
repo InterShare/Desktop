@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>9</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Common.Logging" Version="3.4.1" />
+    <PackageReference Include="Eto.Forms" Version="2.6.1" />
+    <PackageReference Include="IPNetwork2" Version="2.5.402" />
+    <PackageReference Include="Makaretu.Dns" Version="2.0.1" />
+    <PackageReference Include="SMTSP" Version="1.0.9" />
+    <PackageReference Include="System.Text.Json" Version="6.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Pages\" />
+    <Folder Include="Dialogs\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Pages\" />
+    <None Remove="Dialogs\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\House.png" />
+    <EmbeddedResource Include="Resources\House.png" />
+    <None Remove="Resources\Settings.png" />
+    <EmbeddedResource Include="Resources\Settings.png" />
+    <None Remove="Resources\HouseTwo.png" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+
+    <RuntimeIdentifiers>osx-x64</RuntimeIdentifiers>
+
+    <AssemblyName>SMTS</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(OSX)) AND $(Configuration) == 'Release'">
+    <EnableCodeSigning>True</EnableCodeSigning>
+    <EnableNotarization>True</EnableNotarization>
+    <EnableDmgBuild>True</EnableDmgBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Eto.Platform.Mac64" Version="2.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Icon.icns" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Icon.icns" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DesktopApp\DesktopApp.csproj" />
+  </ItemGroup>
+</Project>
