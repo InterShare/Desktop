@@ -52,7 +52,6 @@ namespace DesktopApp
 
         private void OnClosed(object sender, EventArgs e)
         {
-            Console.WriteLine("OnClosed()");
             _advertiser?.StopAdvertising();
             _advertiser?.Dispose();
         }

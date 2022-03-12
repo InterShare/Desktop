@@ -1,0 +1,35 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  macOS:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Build
+      env:
+        PROJECT_NAME: "InterShare"
+        MAC_APP_FILE: "InterShare.app"
+        MAC_PROJECT_DIR: "./src/DesktopApp.XamMac"
+        MAC_PROJECT_FILE: "DesktopApp.XamMac.csproj"
+        BUILD_OUTPUT_DIRECTORY: "./Build"
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+      run: ./.github/workflows/scrips/build-mac.sh
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: NuGet-Package
+        path: packages
