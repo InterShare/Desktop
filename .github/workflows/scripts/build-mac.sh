@@ -34,7 +34,7 @@ function BuildZip
 function ClearBuildDirectory
 {
     rm -rf "$FULL_BUILD_OUTPUT_DIRECTORY";
-    mkdir "$FULL_BUILD_OUTPUT_DIRECTORY";
+    mkdir -p "$FULL_BUILD_OUTPUT_DIRECTORY";
 }
 
 function Start
