@@ -23,6 +23,6 @@ jobs:
         RawBranch="$(echo ${GITHUB_REF#refs/heads/})"
         echo "##[set-output name=branch;]$(echo $RawBranch)"
 
-     - uses: ./.github/workflows/pipeline/build
+     - uses: ./.github/workflows/pipeline/build.yml
         with:
           version: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
