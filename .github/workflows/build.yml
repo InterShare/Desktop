@@ -146,7 +146,7 @@ jobs:
     - name: Build
       run: |
         $Branch_Name = $Env:GITHUB_REF -replace 'refs/heads/', '';
-        $Build_Version = "test-$Branch_Name";
+        $Build_Version = "${{ steps.latest_tag.outputs.tag }}-$Branch_Name";
         $Clean_Version = $Build_Version -Replace '\/|\[|\]|\+','-';
         echo "Version: $Clean_Version";
         dotnet publish /p:PublishSingleFile=true `
