@@ -169,6 +169,6 @@ jobs:
   deploy:
     name: Deploy
     needs: [macOS, linux-binary, windows]
-    jobs:
+    steps:
       - name: Test
       - run: echo "Hello, World";
