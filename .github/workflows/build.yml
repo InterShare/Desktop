@@ -147,13 +147,13 @@ jobs:
       env:
         BUILD_VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
       run: |
-        CLEAN_VERSION=$(echo "$BUILD_VERSION" | sed -r 's/[\/]+/-/g')
+        $Clean_Version = $BUILD_VERSION -Replace '\/|\[|\]|\+','-'
         dotnet publish /p:PublishSingleFile=true `
                       /p:IncludeNativeLibrariesForSelfExtract=true `
                       --self-contained true `
                       -o ${{ github.workspace }}/build `
                       -c Release `
-                      /property:Version="$CLEAN_VERSION" `
+                      /property:Version="$Clean_Version" `
                       -r win-x64 `
                       src/DesktopApp.Wpf/DesktopApp.Wpf.csproj
 
