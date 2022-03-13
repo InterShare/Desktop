@@ -140,13 +140,14 @@ jobs:
 
     - name: Extract branch name
       shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      run: echo $($Env:GITHUB_REF -replace 'refs/heads/', '')
       id: extract_branch
 
     - name: Build
       env:
         BUILD_VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
       run: |
+        echo "$Build_Version";
         $Clean_Version = $BUILD_VERSION -Replace '\/|\[|\]|\+','-';
         echo "Version: $Clean_Version";
         dotnet publish /p:PublishSingleFile=true `
