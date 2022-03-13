@@ -148,17 +148,17 @@ jobs:
         BUILD_VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
       run: |
         CLEAN_VERSION=$(echo "$BUILD_VERSION" | sed -r 's/[\/]+/-/g')
-        dotnet publish /p:PublishSingleFile=true \
-                      /p:IncludeNativeLibrariesForSelfExtract=true \
-                      --self-contained true \
-                      -o ${{ github.workspace }}/build \
-                      -c Release \
-                      /property:Version="$CLEAN_VERSION" \
-                      -r win-x64 \
-                      src/DesktopApp.Gtk/DesktopApp.Wpf.csproj
+        dotnet publish /p:PublishSingleFile=true `
+                      /p:IncludeNativeLibrariesForSelfExtract=true `
+                      --self-contained true `
+                      -o ${{ github.workspace }}/build `
+                      -c Release `
+                      /property:Version="$CLEAN_VERSION" `
+                      -r win-x64 `
+                      src/DesktopApp.Wpf/DesktopApp.Wpf.csproj
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: windows
-        path: ${{ github.workspace }}/build/
+        path: ${{ github.workspace }}/build/InterShare.exe
