@@ -75,6 +75,7 @@ jobs:
   linux-binary:
     name: Build Linux binary
     runs-on: ubuntu-latest
+    environment: Build
     steps:
     - uses: actions/checkout@v2
 
