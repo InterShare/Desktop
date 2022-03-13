@@ -171,4 +171,4 @@ jobs:
     needs: [macOS, linux-binary, windows]
     steps:
       - name: Test
-      - run: echo "Hello, World";
+        run: echo "Hello, World";
