@@ -36,8 +36,8 @@ jobs:
 
     - name: Restore
       run: |
-        dotnet restore src/DesktopApp/DesktopApp.csproj;
-        dotnet restore src/DesktopApp.XamMac/DesktopApp.XamMac.csproj;
+        dotnet restore src/DesktopApp/DesktopApp.csproj
+        nuget restore src/DesktopApp.XamMac/DesktopApp.XamMac.csproj
 
     - name: Build
       env:
