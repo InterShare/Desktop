@@ -9,7 +9,7 @@ function ChangeVersion
 
 function Notarize
 {
-    xcrun notarytool submit "${FULL_BUILD_OUTPUT_DIRECTORY}/${ZIP_NAME}" \
+    xcrun notarytool submit "${BUILD_OUTPUT_DIRECTORY}/${ZIP_NAME}" \
                     --apple-id "${APPLE_ID}" \
                     --team-id "${APPLE_TEAM_ID}" \
                     --password "${APPLE_ID_PASSWORD}" \
@@ -26,15 +26,15 @@ function Build
 
 function BuildZip
 {
-    cd "$MAC_PROJECT_DIR/bin/Release/"
-
-    zip -r "$FULL_BUILD_OUTPUT_DIRECTORY/${ZIP_NAME}" "$MAC_APP_FILE"
+    pushd "$MAC_PROJECT_DIR/bin/Release/";
+        zip -r "$BUILD_OUTPUT_DIRECTORY/${ZIP_NAME}" "$MAC_APP_FILE";
+    popd;
 }
 
 function ClearBuildDirectory
 {
-    rm -rf "$FULL_BUILD_OUTPUT_DIRECTORY";
-    mkdir -p "$FULL_BUILD_OUTPUT_DIRECTORY";
+    rm -rf "$BUILD_OUTPUT_DIRECTORY";
+    mkdir -p "$BUILD_OUTPUT_DIRECTORY";
 }
 
 function Start
@@ -65,8 +65,6 @@ function Entry
     else
         export ZIP_NAME="${PROJECT_NAME}.zip"
     fi
-
-    export FULL_BUILD_OUTPUT_DIRECTORY="$BUILD_OUTPUT_DIRECTORY/macOS"
 
     Start;
     Error=$?
