@@ -169,6 +169,7 @@ jobs:
   deploy:
     name: Deploy
     needs: [macOS, linux-binary, windows]
+    runs-on: ubuntu-latest
     steps:
       - name: Test
         run: echo "Hello, World";
