@@ -1,9 +1,13 @@
-name: Build
+name: Deploy
 
 on:
-  push:
-    branches:
-      - '**'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number"
+        default: "0.0.0"
+        required: true
+
 
 jobs:
   macOS:
@@ -161,3 +165,8 @@ jobs:
       with:
         name: windows
         path: ${{ github.workspace }}/build/InterShare.exe
+
+
+    - name: Test
+      needs: [macOS, linux-binary, windows]
+      run: echo "Test"
