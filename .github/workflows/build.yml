@@ -40,10 +40,10 @@ jobs:
         nuget restore src/DesktopApp.XamMac/DesktopApp.XamMac.csproj
 
     - name: Get Previous tag
-        id: latest_tag
-        uses: "WyriHaximus/github-action-get-previous-tag@v1"
-        with:
-          fallback: 0.0.0
+      id: latest_tag
+      uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      with:
+        fallback: 0.0.0
 
     - name: Extract branch name
       shell: bash
