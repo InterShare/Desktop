@@ -61,8 +61,8 @@ jobs:
         APPLE_ID: ${{ secrets.APPLE_ID }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-        VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
-      run: ./.github/workflows/scripts/build-mac.sh "$VERSION"
+        BUILD_VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
+      run: ./.github/workflows/scripts/build-mac.sh "$BUILD_VERSION"
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2

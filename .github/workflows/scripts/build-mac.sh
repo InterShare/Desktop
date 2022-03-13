@@ -4,7 +4,7 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 function ChangeVersion
 {
-    sed -i '$!N;s/<key>CFBundleShortVersionString<\/key>\n\t<string>.*$/<key>CFBundleShortVersionString<\/key>\n\t<string>'"$1"'<\/string>/g' "${MAC_PROJECT_DIR}/Info.plist"
+    /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $1" "${MAC_PROJECT_DIR}/Info.plist"
 }
 
 function Notarize
