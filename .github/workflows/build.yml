@@ -132,25 +132,20 @@ jobs:
         dotnet restore src/DesktopApp/DesktopApp.csproj
         dotnet restore src/DesktopApp.Wpf/DesktopApp.Wpf.csproj
 
-    - name: Get Previous tag
+    - name: Get latest tag
       id: latest_tag
       uses: "WyriHaximus/github-action-get-previous-tag@v1"
       with:
         fallback: 0.0.0
-
-    # - name: Extract branch name
-    #   shell: bash
-    #   run: echo "##[set-output name=branch;]$(echo ($Env:GITHUB_REF -replace 'refs/heads/', ''))
-    #   id: extract_branch
 
     - name: Build
       run: |
         $Branch_Name = $Env:GITHUB_REF -replace 'refs/heads/', '';
         $Build_Version = "${{ steps.latest_tag.outputs.tag }}-$Branch_Name";
         $Clean_Version = $Build_Version -Replace '\/|\[|\]|\+','-';
-        echo "Version: $Clean_Version";
         dotnet publish /p:PublishSingleFile=true `
                       /p:IncludeNativeLibrariesForSelfExtract=true `
+                      /p:PublishTrimmed=true `
                       --self-contained true `
                       -o ${{ github.workspace }}/build `
                       -c Release `
