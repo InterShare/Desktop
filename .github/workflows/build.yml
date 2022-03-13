@@ -39,6 +39,18 @@ jobs:
         dotnet restore src/DesktopApp/DesktopApp.csproj
         nuget restore src/DesktopApp.XamMac/DesktopApp.XamMac.csproj
 
+    - name: Get Previous tag
+        id: latest_tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: 0.0.0
+
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+
+
     - name: Build
       env:
         PROJECT_NAME: "InterShare"
@@ -49,10 +61,12 @@ jobs:
         APPLE_ID: ${{ secrets.APPLE_ID }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-      run: ./.github/workflows/scripts/build-mac.sh
+        VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
+      run: echo 'Version: $VERSION'
+      # run: ./.github/workflows/scripts/build-mac.sh
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: macOS-Build
-        path: ${{ github.workspace }}/build
+    # - name: Upload artifacts
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: macOS
+    #     path: ${{ github.workspace }}/build
