@@ -53,7 +53,7 @@ namespace DesktopApp.Dialogs
                 _devices.Clear();
                 _listBox.Items.Clear();
 
-                foreach (DeviceInfo? deviceInfo in _discovery.DiscoveredDevices)
+                foreach (DeviceInfo? deviceInfo in _discovery?.DiscoveredDevices)
                 {
                     try
                     {

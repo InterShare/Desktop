@@ -122,7 +122,7 @@ namespace DesktopApp.Pages
 
             if (fileDialog.ShowDialog(MainForm.Reference) == DialogResult.Ok)
             {
-                var dialog = new SendDialog(fileDialog.FileName)
+                using var dialog = new SendDialog(fileDialog.FileName)
                 {
                     DisplayMode = DialogDisplayMode.Attached
                 };

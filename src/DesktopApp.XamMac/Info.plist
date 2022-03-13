@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>SMTS</string>
+	<string>InterShare</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.julian-baumann.SmtsDesktopApp</string>
+	<string>com.julian-baumann.InterShareDesktop</string>
 	<key>CFBundleShortVersionString</key>
 	<string>0.1.1-development</string>
 	<key>CFBundleVersion</key>
