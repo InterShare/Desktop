@@ -148,6 +148,7 @@ jobs:
         BUILD_VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
       run: |
         $Clean_Version = $BUILD_VERSION -Replace '\/|\[|\]|\+','-'
+        echo "$Clean_Version"
         dotnet publish /p:PublishSingleFile=true `
                       /p:IncludeNativeLibrariesForSelfExtract=true `
                       --self-contained true `
