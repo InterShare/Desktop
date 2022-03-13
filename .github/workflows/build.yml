@@ -34,6 +34,11 @@ jobs:
         api-key-id: ${{ secrets.APPSTORE_KEY_ID }}
         api-private-key: ${{ secrets.APPSTORE_PRIVATE_KEY }}
 
+    - name: Restore
+      run: |
+        dotnet restore src/DesktopApp/DesktopApp.csproj;
+        dotnet restore src/DesktopApp.XamMac/DesktopApp.XamMac.csproj;
+
     - name: Build
       env:
         PROJECT_NAME: "InterShare"
@@ -49,5 +54,5 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: NuGet-Package
+        name: macOS-Build
         path: packages
