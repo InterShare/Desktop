@@ -138,18 +138,16 @@ jobs:
       with:
         fallback: 0.0.0
 
-    - name: Extract branch name
-      shell: bash
-      run: echo "##[set-output name=branch;]$(echo ($Env:GITHUB_REF -replace 'refs/heads/', ''))
-      id: extract_branch
+    # - name: Extract branch name
+    #   shell: bash
+    #   run: echo "##[set-output name=branch;]$(echo ($Env:GITHUB_REF -replace 'refs/heads/', ''))
+    #   id: extract_branch
 
     - name: Build
-      env:
-        BUILD_VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
       run: |
         $Branch_Name = $Env:GITHUB_REF -replace 'refs/heads/', '';
         $Build_Version = "test-$Branch_Name";
-        $Clean_Version = $BUILD_VERSION -Replace '\/|\[|\]|\+','-';
+        $Clean_Version = $Build_Version -Replace '\/|\[|\]|\+','-';
         echo "Version: $Clean_Version";
         dotnet publish /p:PublishSingleFile=true `
                       /p:IncludeNativeLibrariesForSelfExtract=true `
