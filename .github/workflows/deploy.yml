@@ -167,9 +167,9 @@ jobs:
         path: ${{ github.workspace }}/build/InterShare.exe
 
   deploy:
+    runs-on: ubuntu-latest
     name: Deploy
     needs: [macOS, linux-binary, windows]
-    runs-on: ubuntu-latest
     steps:
       - name: Test
         run: echo "Hello, World";
