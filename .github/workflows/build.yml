@@ -17,7 +17,7 @@ jobs:
       with:
         dotnet-version: '6.0.x'
 
-    - name: Setup iOS Certificates
+    - name: Setup Certificates
       uses: apple-actions/import-codesign-certs@v1
       with:
         p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
@@ -25,7 +25,7 @@ jobs:
         keychain: github-actions-xamarin
         keychain-password: ""
 
-    - name: Setup iOS Provisioning Profiles
+    - name: Setup Provisioning Profiles
       uses: apple-actions/download-provisioning-profiles@v1
       with:
         bundle-id: 'com.julian-baumann.InterShareDesktop'
@@ -45,7 +45,7 @@ jobs:
         MAC_APP_FILE: "InterShare.app"
         MAC_PROJECT_DIR: "./src/DesktopApp.XamMac"
         MAC_PROJECT_FILE: "DesktopApp.XamMac.csproj"
-        BUILD_OUTPUT_DIRECTORY: "/Build"
+        BUILD_OUTPUT_DIRECTORY: "${{ env.GITHUB_WORKSPACE }}/Build"
         APPLE_ID: ${{ secrets.APPLE_ID }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
@@ -55,4 +55,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: macOS-Build
-        path: /Build
+        path: "${{ env.GITHUB_WORKSPACE }}/Build"
