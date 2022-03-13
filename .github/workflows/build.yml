@@ -147,7 +147,8 @@ jobs:
       env:
         BUILD_VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
       run: |
-        echo "$Build_Version";
+        $Branch_Name = $Env:GITHUB_REF -replace 'refs/heads/', '';
+        $Build_Version = "test-$Branch_Name";
         $Clean_Version = $BUILD_VERSION -Replace '\/|\[|\]|\+','-';
         echo "Version: $Clean_Version";
         dotnet publish /p:PublishSingleFile=true `
