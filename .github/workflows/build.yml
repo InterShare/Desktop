@@ -50,7 +50,6 @@ jobs:
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
 
-
     - name: Build
       env:
         PROJECT_NAME: "InterShare"
@@ -71,3 +70,95 @@ jobs:
       with:
         name: macOS
         path: ${{ github.workspace }}/build
+
+  linux-binary:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Restore
+      run: |
+        dotnet restore src/DesktopApp/DesktopApp.csproj
+        dotnet restore src/DesktopApp.Gtk/DesktopApp.Gtk.csproj
+
+    - name: Get Previous tag
+      id: latest_tag
+      uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      with:
+        fallback: 0.0.0
+
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+
+    - name: Build
+      env:
+        BUILD_VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
+      run: |
+        CLEAN_VERSION=$(echo "$BUILD_VERSION" | sed -r 's/[\/]+/-/g')
+        dotnet publish /p:PublishSingleFile=true \
+                      /p:IncludeNativeLibrariesForSelfExtract=true \
+                      --self-contained true \
+                      -o ${{ github.workspace }}/build \
+                      -c Release \
+                      /property:Version="$CLEAN_VERSION" \
+                      -r linux-x64 \
+                      src/DesktopApp.Gtk/DesktopApp.Gtk.csproj
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: linux-binary
+        path: ${{ github.workspace }}/build/InterShare
+
+  windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Restore
+      run: |
+        dotnet restore src/DesktopApp/DesktopApp.csproj
+        dotnet restore src/DesktopApp.Wpf/DesktopApp.Wpf.csproj
+
+    - name: Get Previous tag
+      id: latest_tag
+      uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      with:
+        fallback: 0.0.0
+
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+
+    - name: Build
+      env:
+        BUILD_VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
+      run: |
+        CLEAN_VERSION=$(echo "$BUILD_VERSION" | sed -r 's/[\/]+/-/g')
+        dotnet publish /p:PublishSingleFile=true \
+                      /p:IncludeNativeLibrariesForSelfExtract=true \
+                      --self-contained true \
+                      -o ${{ github.workspace }}/build \
+                      -c Release \
+                      /property:Version="$CLEAN_VERSION" \
+                      -r win-x64 \
+                      src/DesktopApp.Gtk/DesktopApp.Wpf.csproj
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows
+        path: ${{ github.workspace }}/build/
