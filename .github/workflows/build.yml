@@ -6,8 +6,8 @@ on:
       - '**'
 
 jobs:
-  build_all:
-    runs-on: linux-latest
+  build:
+    runs-on: ubuntu-latest
     environment: Build
     steps:
     - name: Get Previous tag
