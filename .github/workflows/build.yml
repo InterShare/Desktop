@@ -1,4 +1,4 @@
-name: Build All
+name: Build
 
 on:
   push:
@@ -6,10 +6,12 @@ on:
       - '**'
 
 jobs:
-  build_all:
+  build:
     runs-on: ubuntu-latest
     environment: Build
     steps:
+    - uses: actions/checkout@v2
+
     - name: Get Previous tag
       id: latest_tag
       uses: "WyriHaximus/github-action-get-previous-tag@v1"
