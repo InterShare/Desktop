@@ -140,7 +140,7 @@ jobs:
 
     - name: Extract branch name
       shell: bash
-      run: echo $($Env:GITHUB_REF -replace 'refs/heads/', '')
+      run: echo "##[set-output name=branch;]$(echo ($Env:GITHUB_REF -replace 'refs/heads/', ''))
       id: extract_branch
 
     - name: Build
