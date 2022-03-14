@@ -93,7 +93,9 @@ jobs:
                       src/DesktopApp.Gtk/DesktopApp.Gtk.csproj
 
     - name: Create tar.gz
-      run: tar -czvf ${{ github.workspace }}/build/InterShare.tar.gz ${{ github.workspace }}/build/InterShare
+      run: |
+        cd ${{ github.workspace }}/build
+        tar -czvf InterShare.tar.gz InterShare
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
@@ -166,12 +168,10 @@ jobs:
         path: ${{ github.workspace }}/downloads
 
     - name: FTP Upload
-      uses: SamKirkland/FTP-Deploy-Action@2.0.0
-      env:
-        FTP_SERVER: ${{ secrets.FTP_SERVER }}
-        FTP_USERNAME: ${{ secrets.FTP_USER }}
-        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
-        LOCAL_DIR: ${{ github.workspace }}/downloads
-        METHOD: ftp
-        PORT: 21
-        ARGS: --delete
+      uses: sebastianpopp/ftp-action@releases/v2
+      with:
+        host: ${{ secrets.FTP_SERVER }}
+        user: ${{ secrets.FTP_USER }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        localDir: ${{ github.workspace }}/downloads
+        options: "--delete"
