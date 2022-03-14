@@ -44,17 +44,6 @@ jobs:
         dotnet restore src/DesktopApp/DesktopApp.csproj
         nuget restore src/DesktopApp.XamMac/DesktopApp.XamMac.csproj
 
-    - name: Get Previous tag
-      id: latest_tag
-      uses: "WyriHaximus/github-action-get-previous-tag@v1"
-      with:
-        fallback: 0.0.0
-
-    - name: Extract branch name
-      shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch
-
     - name: Build
       env:
         PROJECT_NAME: "InterShare"
@@ -65,10 +54,8 @@ jobs:
         APPLE_ID: ${{ secrets.APPLE_ID }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-        BUILD_VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
       run: |
-        CLEAN_VERSION=$(echo "$BUILD_VERSION" | sed -r 's/[\/]+/-/g')
-        ./.github/workflows/scripts/build-mac.sh "$CLEAN_VERSION"
+        ./.github/workflows/scripts/build-mac.sh "${{ github.event.inputs.version }}"
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
@@ -92,28 +79,16 @@ jobs:
         dotnet restore src/DesktopApp/DesktopApp.csproj
         dotnet restore src/DesktopApp.Gtk/DesktopApp.Gtk.csproj
 
-    - name: Get Previous tag
-      id: latest_tag
-      uses: "WyriHaximus/github-action-get-previous-tag@v1"
-      with:
-        fallback: 0.0.0
-
-    - name: Extract branch name
-      shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch
-
     - name: Build
       env:
         BUILD_VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
       run: |
-        CLEAN_VERSION=$(echo "$BUILD_VERSION" | sed -r 's/[\/]+/-/g')
         dotnet publish /p:PublishSingleFile=true \
                       /p:IncludeNativeLibrariesForSelfExtract=true \
                       --self-contained true \
                       -o ${{ github.workspace }}/build \
                       -c Release \
-                      /property:Version="$CLEAN_VERSION" \
+                      /property:Version="${{ github.event.inputs.version }}" \
                       -r linux-x64 \
                       src/DesktopApp.Gtk/DesktopApp.Gtk.csproj
 
@@ -139,24 +114,15 @@ jobs:
         dotnet restore src/DesktopApp/DesktopApp.csproj
         dotnet restore src/DesktopApp.Wpf/DesktopApp.Wpf.csproj
 
-    - name: Get latest tag
-      id: latest_tag
-      uses: "WyriHaximus/github-action-get-previous-tag@v1"
-      with:
-        fallback: 0.0.0
-
     - name: Build
       run: |
-        $Branch_Name = $Env:GITHUB_REF -replace 'refs/heads/', '';
-        $Build_Version = "${{ steps.latest_tag.outputs.tag }}-$Branch_Name";
-        $Clean_Version = $Build_Version -Replace '\/|\[|\]|\+','-';
         dotnet publish /p:PublishSingleFile=true `
                       /p:IncludeNativeLibrariesForSelfExtract=true `
                       /p:PublishTrimmed=true `
                       --self-contained true `
                       -o ${{ github.workspace }}/build `
                       -c Release `
-                      /property:Version="$Clean_Version" `
+                      /property:Version="${{ github.event.inputs.version }}" `
                       -r win-x64 `
                       src/DesktopApp.Wpf/DesktopApp.Wpf.csproj
 
@@ -166,10 +132,43 @@ jobs:
         name: windows
         path: ${{ github.workspace }}/build/InterShare.exe
 
-  deploy:
+  # create-release:
+  #   runs-on: ubuntu-latest
+  #   name: Create Release
+  #   needs: [macOS, linux-binary, windows]
+  #   steps:
+  #   - name: Create Release strings
+  #     id: release_strings
+  #     run: |
+  #       echo "RELEASE_TAG=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+  #       echo "RELEASE_NAME=Version ${{ github.event.inputs.version }}" >> $GITHUB_ENV
+
+  #   - name: Create GitHub Release
+  #     uses: softprops/action-gh-release@v1
+  #     with:
+  #       tag_name: ${{ env.RELEASE_TAG }}
+  #       name: ${{ env.RELEASE_NAME }}
+
+  upload:
     runs-on: ubuntu-latest
-    name: Deploy
+    environment: Deployment
+    name: Upload to server
     needs: [macOS, linux-binary, windows]
+    # needs: [create-release]
     steps:
-    - name: Test
-      run: echo "Hello, World";
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: ${{ github.workspace }}/downloads
+
+    - name: FTP Upload
+      uses: SamKirkland/FTP-Deploy-Action@2.0.0
+      env:
+        FTP_SERVER: ${{ secrets.FTP_SERVER }}
+        FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        LOCAL_DIR: ${{ github.workspace }}/downloads
+        METHOD: ftps
+        PORT: 21
+        ARGS: --delete
