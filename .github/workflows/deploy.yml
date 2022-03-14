@@ -169,6 +169,6 @@ jobs:
         FTP_USERNAME: ${{ secrets.FTP_USER }}
         FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         LOCAL_DIR: ${{ github.workspace }}/downloads
-        METHOD: ftps
+        METHOD: ftp
         PORT: 21
         ARGS: --delete
