@@ -153,8 +153,6 @@ jobs:
         $Clean_Version = $Build_Version -Replace '\/|\[|\]|\+','-';
         dotnet publish /p:PublishSingleFile=true `
                       /p:IncludeNativeLibrariesForSelfExtract=true `
-                      /p:PublishTrimmed=true `
-                      --self-contained true `
                       -o ${{ github.workspace }}/build `
                       -c Release `
                       /property:Version="$Clean_Version" `
