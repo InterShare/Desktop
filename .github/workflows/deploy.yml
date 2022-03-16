@@ -123,6 +123,8 @@ jobs:
       run: |
         dotnet publish /p:PublishSingleFile=true `
                       /p:IncludeNativeLibrariesForSelfExtract=true `
+                      /p:PublishTrimmed=true `
+                      --self-contained true `
                       -o ${{ github.workspace }}/build `
                       -c Release `
                       /property:Version="${{ github.event.inputs.version }}" `
@@ -164,6 +166,12 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         path: ${{ github.workspace }}/downloads
+
+    - name: Create version file
+      env:
+        VERSION: ${{ github.event.inputs.version }}
+      run: |
+        echo "{ \"macOS\": \"$VERSION\", \"linux\": \"$VERSION\", \"windows\": \"$VERSION\" }" >> ${{ github.workspace }}/downloads/desktop-versions.json
 
     - name: FTP Upload
       uses: sebastianpopp/ftp-action@releases/v2
