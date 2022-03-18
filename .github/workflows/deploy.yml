@@ -95,7 +95,7 @@ jobs:
     - name: Create tar.gz
       run: |
         cd ${{ github.workspace }}/build
-        tar -czvf InterShare.tar.gz InterShare
+        tar -czvf InterShare-${{ github.event.inputs.version }}.tar.gz InterShare
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
@@ -130,6 +130,12 @@ jobs:
                       /property:Version="${{ github.event.inputs.version }}" `
                       -r win-x64 `
                       src/DesktopApp.Wpf/DesktopApp.Wpf.csproj
+
+    - name: Zip files
+      run: |
+        pushd "${{ github.workspace }}/build";
+        zip -r "Windows-${{ github.event.inputs.version }}.zip" InterShare.exe;
+        popd;
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
