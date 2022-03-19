@@ -134,14 +134,14 @@ jobs:
     - name: Zip files
       run: |
         pushd "${{ github.workspace }}/build";
-        Compress-Archive -Path InterShare.exe -DestinationPath "Windows-${{ github.event.inputs.version }}.zip"
+        Compress-Archive -Path InterShare.exe -DestinationPath "InterShare-${{ github.event.inputs.version }}.zip"
         popd;
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: windows
-        path: "${{ github.workspace }}/build/Windows-${{ github.event.inputs.version }}.zip"
+        path: "${{ github.workspace }}/build/InterShare-${{ github.event.inputs.version }}.zip"
 
   # create-release:
   #   runs-on: ubuntu-latest
