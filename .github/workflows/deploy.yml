@@ -101,7 +101,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: linux-binary
-        path: ${{ github.workspace }}/build/InterShare.tar.gz
+        path: ${{ github.workspace }}/build/InterShare-${{ github.event.inputs.version }}.tar.gz
 
   windows:
     name: Build Windows
