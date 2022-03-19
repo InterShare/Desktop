@@ -141,7 +141,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: windows
-        path: ${{ github.workspace }}/build/InterShare.exe
+        path: "${{ github.workspace }}/build/Windows-${{ github.event.inputs.version }}.zip"
 
   # create-release:
   #   runs-on: ubuntu-latest
