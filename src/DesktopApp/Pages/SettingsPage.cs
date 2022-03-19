@@ -40,8 +40,9 @@ namespace DesktopApp.Pages
                         {
                             new Label
                             {
+                                VerticalAlignment = VerticalAlignment.Center,
                                 TextAlignment = TextAlignment.Right,
-                                Text = "Download folder:",
+                                Text = "Download folder: ",
                                 TextColor = Color.FromGrayscale(0.6f)
                             },
                             new TableCell(downloadPathTextBox, true),
@@ -54,8 +55,9 @@ namespace DesktopApp.Pages
                         {
                             new Label
                             {
+                                VerticalAlignment = VerticalAlignment.Center,
                                 TextAlignment = TextAlignment.Right,
-                                Text = "Device name:",
+                                Text = "Device name: ",
                                 TextColor = Color.FromGrayscale(0.6f)
                             },
                             deviceNameTextBox
@@ -75,14 +77,14 @@ namespace DesktopApp.Pages
                                         TextAlignment = TextAlignment.Center,
                                         Text = $"Version: {_version}\n",
                                         TextColor = Color.FromGrayscale(0.6f),
-                                        Font = SystemFonts.Default(10.0f)
+                                        Font = SystemFonts.Default(Platform.IsMac ? 10.0f : 7.0f)
                                     },
                                     new Label
                                     {
                                         TextAlignment = TextAlignment.Center,
                                         Text = "Author: Julian Baumann\nhttps://julian-baumann.com",
                                         TextColor = Color.FromGrayscale(0.6f),
-                                        Font = SystemFonts.Default(10.0f)
+                                        Font = SystemFonts.Default(Platform.IsMac ? 10.0f : 7.0f)
                                     })
                                 {
                                     HorizontalContentAlignment = HorizontalAlignment.Center
