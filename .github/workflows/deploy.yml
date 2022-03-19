@@ -143,29 +143,35 @@ jobs:
         name: windows
         path: "${{ github.workspace }}/build/InterShare-${{ github.event.inputs.version }}.zip"
 
-  # create-release:
-  #   runs-on: ubuntu-latest
-  #   name: Create Release
-  #   needs: [macOS, linux-binary, windows]
-  #   steps:
-  #   - name: Create Release strings
-  #     id: release_strings
-  #     run: |
-  #       echo "RELEASE_TAG=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-  #       echo "RELEASE_NAME=Version ${{ github.event.inputs.version }}" >> $GITHUB_ENV
+  create-release:
+    runs-on: ubuntu-latest
+    name: Create Release
+    needs: [macOS, linux-binary, windows]
+    steps:
 
-  #   - name: Create GitHub Release
-  #     uses: softprops/action-gh-release@v1
-  #     with:
-  #       tag_name: ${{ env.RELEASE_TAG }}
-  #       name: ${{ env.RELEASE_NAME }}
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: ${{ github.workspace }}/downloads
+
+    - name: Create Release strings
+      id: release_strings
+      run: |
+        echo "RELEASE_TAG=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+        echo "RELEASE_NAME=Version ${{ github.event.inputs.version }}" >> $GITHUB_ENV
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ env.RELEASE_TAG }}
+        name: ${{ env.RELEASE_NAME }}
+        files: ${{ github.workspace }}/downloads
 
   upload:
     runs-on: ubuntu-latest
     environment: Deployment
     name: Upload to server
-    needs: [macOS, linux-binary, windows]
-    # needs: [create-release]
+    needs: [create-release]
     steps:
 
     - name: Download artifacts
