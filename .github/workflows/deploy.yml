@@ -180,6 +180,7 @@ jobs:
         user: ${{ secrets.FTP_USER }}
         password: ${{ secrets.FTP_PASSWORD }}
         localDir: ${{ github.workspace }}/downloads
+        remoteDir: .
         options: "--delete"
 
     - name: Create version file
@@ -196,3 +197,4 @@ jobs:
         user: ${{ secrets.FTP_USER }}
         password: ${{ secrets.FTP_PASSWORD }}
         localFile: ${{ github.workspace }}/versions
+        remoteDir: .
