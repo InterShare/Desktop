@@ -43,7 +43,7 @@ namespace DesktopApp.Pages
             _dropBox = new GroupBox()
             {
                 // Due to a bug in ETO.Forms regarding drag-drop on linux, we disable it here
-                AllowDrop = true,
+                AllowDrop = !Platform.IsGtk,
                 Content = new StackLayout()
                 {
                     VerticalContentAlignment = VerticalAlignment.Center,
@@ -101,7 +101,7 @@ namespace DesktopApp.Pages
                         return;
                     }
 
-                    using var dialog = new SendDialog(filePath)
+                    var dialog = new SendDialog(filePath)
                     {
                         DisplayMode = DialogDisplayMode.Attached
                     };
@@ -122,7 +122,7 @@ namespace DesktopApp.Pages
 
             if (fileDialog.ShowDialog(MainForm.Reference) == DialogResult.Ok)
             {
-                using var dialog = new SendDialog(fileDialog.FileName)
+                var dialog = new SendDialog(fileDialog.FileName)
                 {
                     DisplayMode = DialogDisplayMode.Attached
                 };

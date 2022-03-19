@@ -26,7 +26,7 @@ namespace DesktopApp.Dialogs
 
         public SendDialog(string filePath)
         {
-            _discovery = new Discovery(Config<ConfigFile>.Values.MyDeviceInfo);
+            _discovery = new Discovery(Config<ConfigFile>.Values.MyDeviceInfo, Config<ConfigFile>.Values.UseMdnsForDiscovery ? DiscoveryTypes.Mdns : DiscoveryTypes.UdpBroadcasts);
             _filePath = filePath;
 
             Title = "Send File";
@@ -78,8 +78,8 @@ namespace DesktopApp.Dialogs
         {
             try
             {
-                _discovery.Dispose();
                 _sendFileCancellationTokenSource.Cancel();
+                _discovery.Dispose();
                 Close();
             }
             catch (Exception exception)

@@ -28,6 +28,30 @@ namespace DesktopApp.Pages
             deviceNameTextBox.TextBinding.Bind(Config<ConfigFile>.Values, n => n.DeviceName);
             deviceNameTextBox.TextChanged += (sender, args) => Config<ConfigFile>.Update();
 
+            bool useMdns = Config<ConfigFile>.Values.UseMdnsForDiscovery;
+
+            var useMdnsRadioButton = new RadioButton
+            {
+                Text = "MDNS-SD",
+                Checked = useMdns
+            };
+            useMdnsRadioButton.CheckedChanged += (sender, args) =>
+            {
+                Config<ConfigFile>.Values.UseMdnsForDiscovery = true;
+                Config<ConfigFile>.Update();
+            };
+
+            var useUdpBroadcastsRadioButton = new RadioButton(useMdnsRadioButton)
+            {
+                Text = "UDP Broadcasts",
+                Checked = !useMdns
+            };
+            useUdpBroadcastsRadioButton.CheckedChanged += (sender, args) =>
+            {
+                Config<ConfigFile>.Values.UseMdnsForDiscovery = false;
+                Config<ConfigFile>.Update();
+            };
+
             Content = new TableLayout
             {
                 Spacing = new Size(0, 10),
@@ -59,6 +83,19 @@ namespace DesktopApp.Pages
                                 TextColor = Color.FromGrayscale(0.6f)
                             },
                             deviceNameTextBox
+                        }
+                    },
+                    new TableRow
+                    {
+                        Cells =
+                        {
+                            new Label
+                            {
+                                TextAlignment = TextAlignment.Right,
+                                Text = "Discovery: ",
+                                TextColor = Color.FromGrayscale(0.6f)
+                            },
+                            new DynamicLayout(useMdnsRadioButton, useUdpBroadcastsRadioButton)
                         }
                     },
                     null,

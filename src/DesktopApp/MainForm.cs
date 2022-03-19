@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ using DesktopApp.Services;
 using Eto.Drawing;
 using Eto.Forms;
 using SMTSP;
-using SMTSP.Discovery;
+using SMTSP.Advertisement;
 using SMTSP.Discovery.Entities;
 using SMTSP.Entities;
 
@@ -107,12 +108,24 @@ namespace DesktopApp
                     Port = ushort.Parse(smtspReceiver.Port.ToString())
                 };
 
-                _advertiser = new Advertiser(Config<ConfigFile>.Values.MyDeviceInfo);
+                _advertiser = new Advertiser(Config<ConfigFile>.Values.MyDeviceInfo, Config<ConfigFile>.Values.UseMdnsForDiscovery ? DiscoveryTypes.Mdns : DiscoveryTypes.UdpBroadcasts);
                 _advertiser.Advertise();
+                Config<ConfigFile>.Values.PropertyChanged += ConfigPropertyChanged;
             }
             catch (Exception exception)
             {
                 Console.WriteLine(exception);
+            }
+        }
+
+        private void ConfigPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ConfigFile.UseMdnsForDiscovery))
+            {
+                _advertiser?.StopAdvertising();
+                _advertiser?.Dispose();
+                _advertiser = new Advertiser(Config<ConfigFile>.Values.MyDeviceInfo, Config<ConfigFile>.Values.UseMdnsForDiscovery ? DiscoveryTypes.Mdns : DiscoveryTypes.UdpBroadcasts);
+                _advertiser.Advertise();
             }
         }
 
@@ -148,7 +161,7 @@ namespace DesktopApp
 
                 await Application.Instance.InvokeAsync(async () =>
                 {
-                    using var dialog = new ReceivingDialog(progress, file, cancellationTokenSource)
+                    var dialog = new ReceivingDialog(progress, file, cancellationTokenSource)
                     {
                         DisplayMode = DialogDisplayMode.Attached
                     };

@@ -11,6 +11,7 @@ namespace DesktopApp.Core
     {
         private string _downloadPath;
         private string _deviceName;
+        private bool _useMdnsForDiscovery = true;
 
         [JsonIgnore]
         public string CliVersion { get; set; }
@@ -31,6 +32,13 @@ namespace DesktopApp.Core
 
         [JsonPropertyName("deviceId")]
         public string DeviceIdentifier { get; set; }
+
+        [JsonPropertyName("useMdnsForDiscovery")]
+        public bool UseMdnsForDiscovery
+        {
+            get => _useMdnsForDiscovery;
+            set => Set(ref _useMdnsForDiscovery, value);
+        }
 
         [JsonPropertyName("wasOpenedBefore")]
         public bool WasOpenedBefore { get; set; } = false;
