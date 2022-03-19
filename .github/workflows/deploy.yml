@@ -134,7 +134,7 @@ jobs:
     - name: Zip files
       run: |
         pushd "${{ github.workspace }}/build";
-        zip -r "Windows-${{ github.event.inputs.version }}.zip" InterShare.exe;
+        Compress-Archive -Path InterShare.exe -DestinationPath "Windows-${{ github.event.inputs.version }}.zip"
         popd;
 
     - name: Upload artifacts
