@@ -173,12 +173,6 @@ jobs:
       with:
         path: ${{ github.workspace }}/downloads
 
-    - name: Create version file
-      env:
-        VERSION: ${{ github.event.inputs.version }}
-      run: |
-        echo "{ \"macOS\": \"$VERSION\", \"linux\": \"$VERSION\", \"windows\": \"$VERSION\" }" >> ${{ github.workspace }}/downloads/desktop-versions.json
-
     - name: FTP Upload
       uses: sebastianpopp/ftp-action@releases/v2
       with:
@@ -186,4 +180,19 @@ jobs:
         user: ${{ secrets.FTP_USER }}
         password: ${{ secrets.FTP_PASSWORD }}
         localDir: ${{ github.workspace }}/downloads
+        options: "--delete"
+
+    - name: Create version file
+      env:
+        VERSION: ${{ github.event.inputs.version }}
+      run: |
+        echo "{ \"macOS\": \"$VERSION\", \"linux\": \"$VERSION\", \"windows\": \"$VERSION\" }" >> ${{ github.workspace }}/downloads/desktop-versions.json
+
+    - name: FTP Upload version file
+      uses: sebastianpopp/ftp-action@releases/v2
+      with:
+        host: ${{ secrets.FTP_SERVER }}
+        user: ${{ secrets.FTP_USER }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        localDir: ${{ github.workspace }}/downloads/desktop-versions.json
         options: "--delete"
