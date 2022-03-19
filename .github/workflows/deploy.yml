@@ -186,7 +186,8 @@ jobs:
       env:
         VERSION: ${{ github.event.inputs.version }}
       run: |
-        echo "{ \"macOS\": \"$VERSION\", \"linux\": \"$VERSION\", \"windows\": \"$VERSION\" }" >> ${{ github.workspace }}/downloads/desktop-versions.json
+        mkdir -p ${{ github.workspace }}/versions;
+        echo "{ \"macOS\": \"$VERSION\", \"linux\": \"$VERSION\", \"windows\": \"$VERSION\" }" >> ${{ github.workspace }}/versions/desktop-versions.json
 
     - name: FTP Upload version file
       uses: sebastianpopp/ftp-action@releases/v2
@@ -194,5 +195,4 @@ jobs:
         host: ${{ secrets.FTP_SERVER }}
         user: ${{ secrets.FTP_USER }}
         password: ${{ secrets.FTP_PASSWORD }}
-        localDir: ${{ github.workspace }}/downloads/desktop-versions.json
-        options: "--delete"
+        localFile: ${{ github.workspace }}/versions
