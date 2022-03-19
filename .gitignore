@@ -37,3 +37,4 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 .DS_Store
+build
