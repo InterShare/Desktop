@@ -53,7 +53,12 @@ namespace DesktopApp.Dialogs
                 _devices.Clear();
                 _listBox.Items.Clear();
 
-                foreach (DeviceInfo? deviceInfo in _discovery?.DiscoveredDevices)
+                if (_discovery?.DiscoveredDevices == null)
+                {
+                    return;
+                }
+
+                foreach (DeviceInfo? deviceInfo in _discovery.DiscoveredDevices)
                 {
                     try
                     {
@@ -129,6 +134,10 @@ namespace DesktopApp.Dialogs
 
         private void ShowList()
         {
+            var manualButton = new Button();
+            manualButton.Text = "Manual";
+            manualButton.Click += ManualButtonOnClick;
+
             Content = new TableLayout
             {
                 Padding = 10,
@@ -154,7 +163,9 @@ namespace DesktopApp.Dialogs
                                         Text = " Searching for devices",
                                         Font = SystemFonts.Bold(),
                                         TextColor = Color.FromGrayscale(0.6f)
-                                    }
+                                    },
+                                    null,
+                                    manualButton
                                 }
                             }
                         }
@@ -162,6 +173,27 @@ namespace DesktopApp.Dialogs
                     _listBox
                 }
             };
+        }
+
+        private async void ManualButtonOnClick(object sender, EventArgs e)
+        {
+            var dialog = new ManuallySendDialog()
+            {
+                DisplayMode = DialogDisplayMode.Attached
+            };
+
+            dialog.SendClicked += async delegate(string address, ushort port)
+            {
+                var deviceInfo = new DeviceInfo
+                {
+                    IpAddress = address,
+                    Port = port
+                };
+
+                await SendFile(deviceInfo);
+            };
+
+            await dialog.ShowModalAsync(this);
         }
 
         private void UpdateProgressBar(double progress)

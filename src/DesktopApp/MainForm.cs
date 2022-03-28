@@ -108,6 +108,8 @@ namespace DesktopApp
                     Port = ushort.Parse(smtspReceiver.Port.ToString())
                 };
 
+                StartPage.ChangeDeviceInfo(Config<ConfigFile>.Values.MyDeviceInfo.Port);
+
                 _advertiser = new Advertiser(Config<ConfigFile>.Values.MyDeviceInfo, Config<ConfigFile>.Values.UseMdnsForDiscovery ? DiscoveryTypes.Mdns : DiscoveryTypes.UdpBroadcasts);
                 _advertiser.Advertise();
                 Config<ConfigFile>.Values.PropertyChanged += ConfigPropertyChanged;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Web;
 using DesktopApp.Core;
@@ -11,23 +12,44 @@ namespace DesktopApp.Pages
     public class StartPage : Panel
     {
         private GroupBox _dropBox;
+        private static readonly Label _addressLabel = new Label
+        {
+            TextAlignment = TextAlignment.Right,
+            TextColor = Color.FromGrayscale(0.6f),
+            Text = ""
+        };
 
         public StartPage()
         {
-            Content = new TableLayout()
-            {
-                Padding = 20,
-                Rows =
-                {
-                    CreateDropBox()
-                }
-            };
+            var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
-            if (!Config<ConfigFile>.Values.WasOpenedBefore)
+            layout.Add(CreateDropBox(), yscale: true);
+            layout.Add(_addressLabel, yscale: false);
+
+            Content = layout;
+
+            if (Config<ConfigFile>.Values?.WasOpenedBefore == false)
             {
                 MessageBox.Show(this, "PLEASE NOTE:\nThis is a pre-release software.\nAt this time there is no update-mechanism implemented, so please check the website regularly for updates", MessageBoxButtons.OK, MessageBoxType.Warning);
                 Config<ConfigFile>.Values.WasOpenedBefore = true;
                 Config<ConfigFile>.Update();
+            }
+        }
+
+        public static void ChangeDeviceInfo(ushort port)
+        {
+            _addressLabel.Text = $"{GetIpAddress()}:{port}";
+        }
+
+        private static string GetIpAddress()
+        {
+            try
+            {
+                return IpAddress.GetIpAddress();
+            }
+            catch (Exception)
+            {
+                return "";
             }
         }
 
