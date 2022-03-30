@@ -95,13 +95,13 @@ jobs:
     - name: Create tar.gz
       run: |
         cd ${{ github.workspace }}/build
-        tar -czvf InterShare-${{ github.event.inputs.version }}.tar.gz InterShare
+        tar -czvf InterShare.Linux-${{ github.event.inputs.version }}.tar.gz InterShare
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: linux-binary
-        path: ${{ github.workspace }}/build/InterShare-${{ github.event.inputs.version }}.tar.gz
+        path: ${{ github.workspace }}/build/InterShare.Linux-${{ github.event.inputs.version }}.tar.gz
 
   windows:
     name: Build Windows
@@ -134,14 +134,14 @@ jobs:
     - name: Zip files
       run: |
         pushd "${{ github.workspace }}/build";
-        Compress-Archive -Path InterShare.exe -DestinationPath "InterShare-${{ github.event.inputs.version }}.zip"
+        Compress-Archive -Path InterShare.exe -DestinationPath "InterShare.Windows-${{ github.event.inputs.version }}.zip"
         popd;
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: windows
-        path: "${{ github.workspace }}/build/InterShare-${{ github.event.inputs.version }}.zip"
+        path: "${{ github.workspace }}/build/InterShare.Windows-${{ github.event.inputs.version }}.zip"
 
   create-release:
     runs-on: ubuntu-latest
@@ -166,9 +166,9 @@ jobs:
         tag_name: ${{ env.RELEASE_TAG }}
         name: ${{ env.RELEASE_NAME }}
         files: |
-          ${{ github.workspace }}/downloads/linux-binary/InterShare-${{ github.event.inputs.version }}.tar.gz
-          ${{ github.workspace }}/downloads/macOS/InterShare-${{ github.event.inputs.version }}.zip
-          ${{ github.workspace }}/downloads/windows/InterShare-${{ github.event.inputs.version }}.zip
+          ${{ github.workspace }}/downloads/linux-binary/InterShare.Linux-${{ github.event.inputs.version }}.tar.gz
+          ${{ github.workspace }}/downloads/macOS/InterShare.macOS-${{ github.event.inputs.version }}.zip
+          ${{ github.workspace }}/downloads/windows/InterShare.Windows-${{ github.event.inputs.version }}.zip
 
   upload:
     runs-on: ubuntu-latest

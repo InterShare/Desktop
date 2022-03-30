@@ -61,9 +61,9 @@ function Entry
     if [ "$1" != "" ]; then
         ChangeVersion $1;
         export VERSION="$1"
-        export ZIP_NAME="${PROJECT_NAME}-${VERSION}.zip"
+        export ZIP_NAME="${PROJECT_NAME}.macOS-${VERSION}.zip"
     else
-        export ZIP_NAME="${PROJECT_NAME}.zip"
+        export ZIP_NAME="${PROJECT_NAME}.macOS.zip"
     fi
 
     Start;

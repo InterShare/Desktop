@@ -120,13 +120,13 @@ jobs:
     - name: Create tar.gz
       run: |
         cd ${{ github.workspace }}/build
-        tar -czvf InterShare.tar.gz InterShare
+        tar -czvf InterShare.Linux.tar.gz InterShare
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: linux-binary
-        path: ${{ github.workspace }}/build/InterShare.tar.gz
+        path: ${{ github.workspace }}/build/InterShare.Linux.tar.gz
 
   windows:
     name: Build Windows
