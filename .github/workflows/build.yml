@@ -12,6 +12,8 @@ jobs:
     environment: Build
     steps:
     - uses: actions/checkout@v2
+      with:
+          fetch-depth: 0
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
@@ -77,6 +79,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+          fetch-depth: 0
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
@@ -129,6 +133,8 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+          fetch-depth: 0
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1

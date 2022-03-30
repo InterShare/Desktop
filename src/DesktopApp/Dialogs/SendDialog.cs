@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using DesktopApp.Core;
+using DesktopApp.Helpers;
 using Eto.Drawing;
 using Eto.Forms;
 using SMTSP;
@@ -30,15 +31,16 @@ namespace DesktopApp.Dialogs
             _filePath = filePath;
 
             Title = "Send File";
-            MinimumSize = new Size(300, 300);
-
-            _discovery.DiscoveredDevices.CollectionChanged += DiscoveredDevicesOnCollectionChanged;
-            _discovery.SendOutLookupSignal();
+            MinimumSize = new Size(SizeHelper.GetSize(300), SizeHelper.GetSize(300));
 
             _listBox = new ListBox();
             _listBox.MouseDoubleClick += ListBoxOnMouseDoubleClick;
 
             ShowList();
+
+            _discovery.DiscoveredDevices.CollectionChanged += DiscoveredDevicesOnCollectionChanged;
+            _discovery.SendOutLookupSignal();
+            DiscoveredDevicesOnCollectionChanged(null, null);
 
             AbortButton = new Button { Text = "C&ancel" };
             AbortButton.Click += CloseDialog;
@@ -46,7 +48,7 @@ namespace DesktopApp.Dialogs
             NegativeButtons.Add(AbortButton);
         }
 
-        private void DiscoveredDevicesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void DiscoveredDevicesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs? e)
         {
             Application.Instance.Invoke(() =>
             {
@@ -160,6 +162,7 @@ namespace DesktopApp.Dialogs
                                     },
                                     new Label
                                     {
+                                        VerticalAlignment = VerticalAlignment.Center,
                                         Text = " Searching for devices",
                                         Font = SystemFonts.Bold(),
                                         TextColor = Color.FromGrayscale(0.6f)

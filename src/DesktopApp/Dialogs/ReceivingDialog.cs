@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Timers;
+using DesktopApp.Helpers;
 using Eto.Drawing;
 using Eto.Forms;
 using SMTSP.Entities;
@@ -22,7 +23,7 @@ namespace DesktopApp.Dialogs
             _file = file;
             _cancellationTokenSource = cancellationToken;
             Title = "Receiving File";
-            MinimumSize = new Size(300, 300);
+            MinimumSize = new Size(SizeHelper.GetSize(300), SizeHelper.GetSize(300));
 
             _progressBar = new ProgressBar
             {

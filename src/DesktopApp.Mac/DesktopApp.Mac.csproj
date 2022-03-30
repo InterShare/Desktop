@@ -4,15 +4,15 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
 
-    <RuntimeIdentifiers>osx-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
 
     <AssemblyName>InterShare</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(OSX)) AND $(Configuration) == 'Release'">
-    <EnableCodeSigning>True</EnableCodeSigning>
-    <EnableNotarization>True</EnableNotarization>
-    <EnableDmgBuild>True</EnableDmgBuild>
+    <EnableCodeSigning>False</EnableCodeSigning>
+    <EnableNotarization>False</EnableNotarization>
+    <EnableDmgBuild>False</EnableDmgBuild>
   </PropertyGroup>
 
   <ItemGroup>

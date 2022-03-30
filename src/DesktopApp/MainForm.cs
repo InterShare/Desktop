@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using DesktopApp.Core;
 using DesktopApp.Dialogs;
 using DesktopApp.Extensions;
+using DesktopApp.Helpers;
 using DesktopApp.Pages;
 using DesktopApp.Services;
 using Eto.Drawing;
 using Eto.Forms;
 using SMTSP;
 using SMTSP.Advertisement;
+using SMTSP.Core;
 using SMTSP.Discovery.Entities;
 using SMTSP.Entities;
 
@@ -37,7 +39,7 @@ namespace DesktopApp
 
             Title = "InterShare";
             Maximizable = false;
-            MinimumSize = new Size(400, 350);
+            MinimumSize = new Size(SizeHelper.GetSize(400), SizeHelper.GetSize(350));
             Menu = new MenuBar();
             ToolBar = CreateToolbar();
 

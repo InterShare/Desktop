@@ -1,4 +1,5 @@
 using System;
+using DesktopApp.Helpers;
 using Eto.Drawing;
 using Eto.Forms;
 
@@ -18,7 +19,7 @@ namespace DesktopApp.Dialogs
         public ManuallySendDialog()
         {
             Title = "Enter address manually";
-            MinimumSize = new Size(300, 100);
+            MinimumSize = new Size(SizeHelper.GetSize(300), SizeHelper.GetSize(100));
 
             var layout = new DynamicLayout
             {
