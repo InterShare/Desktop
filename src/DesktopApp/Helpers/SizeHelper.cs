@@ -17,7 +17,7 @@ namespace DesktopApp.Helpers
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return value * (int) Math.Round(value * 0.8);
+                return (int) Math.Round(value * 0.9);
             }
 
             return value;
