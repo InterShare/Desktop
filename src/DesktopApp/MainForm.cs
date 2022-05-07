@@ -275,7 +275,7 @@ namespace DesktopApp
 
                 var msgText = contentIsFile
                     ? $"{transferRequest.SenderName}\n wants to send you \"{((SmtspFileContent) transferRequest.Content).FileName}\"\nAccept?"
-                    : "{transferRequest.SenderName}\n wants to share the clipboard with you\nAccept?";
+                    : $"{transferRequest.SenderName}\n wants to share the clipboard with you\nAccept?";
 
                     DialogResult answer = MessageBox.Show(
                     msgText,
