@@ -11,6 +11,7 @@ using Eto.Forms;
 using SMTSP;
 using SMTSP.Discovery;
 using SMTSP.Entities;
+using SMTSP.Entities.Content;
 
 namespace DesktopApp.Dialogs
 {
@@ -23,19 +24,23 @@ namespace DesktopApp.Dialogs
         private readonly Label _progressBarLabel = new Label();
         private readonly CancellationTokenSource _sendFileCancellationTokenSource = new CancellationTokenSource();
 
-        private readonly Stream _content;
-        private readonly string _contentName;
+        private readonly SmtspContent _content;
 
         public SendDialog(string filePath) : this()
         {
-            _contentName = Path.GetFileName(filePath);
-            _content = File.OpenRead(filePath);
+            var fileName  = Path.GetFileName(filePath);
+            var fileStream  = File.OpenRead(filePath);
+            _content = new SmtspFileContent
+            {
+                DataStream = fileStream,
+                FileName = fileName,
+                FileSize = fileStream.Length
+            };
         }
         
-        public SendDialog(Stream content, string contentName) : this()
+        public SendDialog(SmtspContent content) : this()
         {
             _content = content;
-            _contentName = contentName;
         }
 
         private SendDialog()
@@ -205,8 +210,9 @@ namespace DesktopApp.Dialogs
                     Port = port
                 };
 
-                await SendFile(deviceInfo);
+                await SendContent(deviceInfo);
             };
+
 
             await dialog.ShowModalAsync(this);
         }
@@ -227,34 +233,32 @@ namespace DesktopApp.Dialogs
 
                 if (deviceInfo != null)
                 {
-                    await SendFile(deviceInfo);
+                    await SendContent(deviceInfo);
                 }
             }
         }
 
-        private async Task SendFile(DeviceInfo deviceInfo)
+        private async Task SendContent(DeviceInfo deviceInfo)
         {
             try
             {
                 ShowLoadingSpinner();
                 ShowProgressbar();
-
                 var progress = new Progress<long>();
                 progress.ProgressChanged += (sender, bytesProcessed) =>
                 {
-                    double progressValue = ((bytesProcessed / (double) _content.Length) * 100);
-                    UpdateProgressBar(progressValue);
+                    if (_content is SmtspFileContent fileContent)
+                    {
+                        double progressValue = ((bytesProcessed / (double) fileContent.FileSize) * 100);
+                        UpdateProgressBar(progressValue);
+                    }
                 };
 
                 SendFileResponses result = await SmtspSender.SendFile(deviceInfo,
-                    new SmtsFile
-                    {
-                        Name = _contentName,
-                        DataStream = _content,
-                        FileSize = _content.Length
-                    }, Config<ConfigFile>.Values.MyDeviceInfo, progress, _sendFileCancellationTokenSource.Token);
-
-                _content.Dispose();
+                    _content,
+                    Config<ConfigFile>.Values.MyDeviceInfo,
+                    progress,
+                    _sendFileCancellationTokenSource.Token);
 
                 if (result == SendFileResponses.Denied)
                 {

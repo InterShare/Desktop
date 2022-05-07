@@ -5,8 +5,10 @@ using System.Text;
 using System.Web;
 using DesktopApp.Core;
 using DesktopApp.Dialogs;
+using DesktopApp.Dto;
 using Eto.Forms;
 using Eto.Drawing;
+using SMTSP.Entities.Content;
 
 namespace DesktopApp.Pages
 {
@@ -166,21 +168,26 @@ namespace DesktopApp.Pages
         private async void SendFromClipboard(object sender, EventArgs e)
         {
             var clipboard = Clipboard.Instance;
-            Stream? content = null;
-            string? contentName = null;
+            Stream? contentStream = null;
 
             if (clipboard.ContainsText)
             {
                 var text = clipboard.Text;
-                content = new MemoryStream(Encoding.UTF8.GetBytes(text));
+                contentStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
             }
 
-            if (content != null)
+            if (contentStream != null)
             {
-                var dialog = new SendDialog(content, contentName!)
+                var content = new SmtspClipboardContent
+                {
+                    DataStream = contentStream
+                };
+                
+                var dialog = new SendDialog(content)
                 {
                     DisplayMode = DialogDisplayMode.Attached
                 };
+                
                 
                 await dialog.ShowModalAsync(MainForm.Reference);
             }
