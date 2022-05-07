@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Text;
 using System.Web;
 using DesktopApp.Core;
 using DesktopApp.Dialogs;
@@ -62,6 +63,13 @@ namespace DesktopApp.Pages
 
             sendFileButton.Click += OpenFilePicker;
 
+            var sendClipboardButton = new Button
+            {
+                Text = "Send Clipboard"
+            };
+
+            sendClipboardButton.Click += SendFromClipboard;
+
             _dropBox = new GroupBox()
             {
                 // Due to a bug in ETO.Forms regarding drag-drop on linux, we disable it here
@@ -74,6 +82,8 @@ namespace DesktopApp.Pages
                     {
                         null,
                         new StackLayoutItem(sendFileButton),
+                        null,
+                        new StackLayoutItem(sendClipboardButton),
                         null
                     }
                 }
@@ -149,6 +159,29 @@ namespace DesktopApp.Pages
                     DisplayMode = DialogDisplayMode.Attached
                 };
 
+                await dialog.ShowModalAsync(MainForm.Reference);
+            }
+        }
+
+        private async void SendFromClipboard(object sender, EventArgs e)
+        {
+            var clipboard = Clipboard.Instance;
+            Stream? content = null;
+            string? contentName = null;
+
+            if (clipboard.ContainsText)
+            {
+                var text = clipboard.Text;
+                content = new MemoryStream(Encoding.UTF8.GetBytes(text));
+            }
+
+            if (content != null)
+            {
+                var dialog = new SendDialog(content, contentName!)
+                {
+                    DisplayMode = DialogDisplayMode.Attached
+                };
+                
                 await dialog.ShowModalAsync(MainForm.Reference);
             }
         }

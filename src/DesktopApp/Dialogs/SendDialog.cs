@@ -23,13 +23,25 @@ namespace DesktopApp.Dialogs
         private readonly Label _progressBarLabel = new Label();
         private readonly CancellationTokenSource _sendFileCancellationTokenSource = new CancellationTokenSource();
 
-        private readonly string _filePath;
+        private readonly Stream _content;
+        private readonly string _contentName;
 
-        public SendDialog(string filePath)
+        public SendDialog(string filePath) : this()
+        {
+            _contentName = Path.GetFileName(filePath);
+            _content = File.OpenRead(filePath);
+        }
+        
+        public SendDialog(Stream content, string contentName) : this()
+        {
+            _content = content;
+            _contentName = contentName;
+        }
+
+        private SendDialog()
         {
             _discovery = new Discovery(Config<ConfigFile>.Values.MyDeviceInfo, Config<ConfigFile>.Values.UseMdnsForDiscovery ? DiscoveryTypes.Mdns : DiscoveryTypes.UdpBroadcasts);
-            _filePath = filePath;
-
+            
             Title = "Send File";
             MinimumSize = new Size(SizeHelper.GetSize(300), SizeHelper.GetSize(300));
 
@@ -227,25 +239,22 @@ namespace DesktopApp.Dialogs
                 ShowLoadingSpinner();
                 ShowProgressbar();
 
-                string fileName = Path.GetFileName(_filePath);
-                FileStream fileStream = File.OpenRead(_filePath);
-
                 var progress = new Progress<long>();
                 progress.ProgressChanged += (sender, bytesProcessed) =>
                 {
-                    double progressValue = ((bytesProcessed / (double) fileStream.Length) * 100);
+                    double progressValue = ((bytesProcessed / (double) _content.Length) * 100);
                     UpdateProgressBar(progressValue);
                 };
 
                 SendFileResponses result = await SmtspSender.SendFile(deviceInfo,
                     new SmtsFile
                     {
-                        Name = fileName,
-                        DataStream = fileStream,
-                        FileSize = fileStream.Length
+                        Name = _contentName,
+                        DataStream = _content,
+                        FileSize = _content.Length
                     }, Config<ConfigFile>.Values.MyDeviceInfo, progress, _sendFileCancellationTokenSource.Token);
 
-                fileStream.Dispose();
+                _content.Dispose();
 
                 if (result == SendFileResponses.Denied)
                 {

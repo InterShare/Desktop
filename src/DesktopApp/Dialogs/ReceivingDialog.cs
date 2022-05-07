@@ -55,7 +55,7 @@ namespace DesktopApp.Dialogs
 
             _progress.ProgressChanged += ProgressOnProgressChanged;
 
-            AbortButton = new Button { Text = "C&ancel" };
+            AbortButton = new Button { Text = "Cancel" };
             AbortButton.Click += CloseDialogClicked;
 
             NegativeButtons.Add(AbortButton);

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -12,6 +14,7 @@ namespace DesktopApp.Core
         private string _downloadPath;
         private string _deviceName;
         private bool _useMdnsForDiscovery = true;
+        private ObservableCollection<Contact> _contacts = new ObservableCollection<Contact>();
 
         [JsonIgnore]
         public string CliVersion { get; set; }
@@ -38,6 +41,13 @@ namespace DesktopApp.Core
         {
             get => _useMdnsForDiscovery;
             set => Set(ref _useMdnsForDiscovery, value);
+        }
+        
+        [JsonPropertyName("contacts")]
+        public ObservableCollection<Contact> Contacts
+        {
+            get => _contacts;
+            set => Set(ref _contacts, value);
         }
 
         [JsonPropertyName("wasOpenedBefore")]

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DesktopApp.Core;
 using DesktopApp.Dialogs;
+using DesktopApp.Entities;
 using DesktopApp.Extensions;
 using DesktopApp.Helpers;
 using DesktopApp.Pages;
@@ -24,6 +26,7 @@ namespace DesktopApp
         private Advertiser? _advertiser;
         private readonly StartPage _startPage;
         private readonly SettingsPage _settingsPage;
+        private readonly ContactsPage _contactsPage;
 
         public static MainForm Reference { get; set; }
         public static IVersionService VersionService { get; private set; }
@@ -45,6 +48,7 @@ namespace DesktopApp
 
             _startPage = new StartPage();
             _settingsPage = new SettingsPage();
+            _contactsPage = new ContactsPage();
 
             Content = _startPage;
 
@@ -72,11 +76,23 @@ namespace DesktopApp
                 Content = _startPage;
             };
 
+            var contactsButton = new RadioToolItem
+            {
+                Image = Icons.ContactsIcon,
+                Text = "Contacts"
+            };
+            
+            contactsButton.Click += (_, __) =>
+            {
+                Content = _contactsPage;
+            };
+
             var settingsButton = new RadioToolItem()
             {
                 Image = Icons.SettingsIcon,
                 Text = "Settings",
             };
+            
             settingsButton.Click += (sender, args) =>
             {
                 Content = _settingsPage;
@@ -87,6 +103,7 @@ namespace DesktopApp
                 Items  =
                 {
                     startPageButton,
+                    contactsButton,
                     settingsButton
                 }
             };
@@ -225,11 +242,41 @@ namespace DesktopApp
         {
             return Application.Instance.Invoke(() =>
             {
+                var contacts = Config<ConfigFile>.Values.Contacts;
+
+                Contact? contact = contacts.SingleOrDefault(x => x.ContactId == transferRequest.SenderId);
+
+                if (contact != null && contact.AlwaysAllowReceivingContent)
+                {
+                    return Task.FromResult(true);
+                }
+                
                 DialogResult answer = MessageBox.Show(
                     $"{transferRequest.SenderName}\n wants to send you \"{transferRequest.FileName}\"\nAccept?",
                     MessageBoxButtons.YesNo, MessageBoxType.Question, MessageBoxDefaultButton.Yes);
 
-                return Task.FromResult(answer == DialogResult.Yes);
+                if (answer == DialogResult.Yes)
+                {
+
+                    if (contact == null)
+                    {
+                        contact = new Contact
+                        {
+                            ContactId = transferRequest.SenderId,
+                            ContactName = transferRequest.SenderName,
+                            PublicKey = null,
+                            AlwaysAllowReceivingContent = false,
+                            SyncClipboard = false
+                        };
+                        
+                        Config<ConfigFile>.Values.Contacts.Add(contact);
+                        Config<ConfigFile>.Update();
+                    }
+                    
+                    return Task.FromResult(true);
+                }
+
+                return Task.FromResult(false);
             });
         }
     }
