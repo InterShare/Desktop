@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -13,7 +14,7 @@ namespace DesktopApp.Core
         private string _downloadPath;
         private string _deviceName;
         private bool _useMdnsForDiscovery = true;
-        private List<Contact> _contacts;
+        private ObservableCollection<Contact> _contacts = new ObservableCollection<Contact>();
 
         [JsonIgnore]
         public string CliVersion { get; set; }
@@ -43,7 +44,7 @@ namespace DesktopApp.Core
         }
         
         [JsonPropertyName("contacts")]
-        public List<Contact> Contacts
+        public ObservableCollection<Contact> Contacts
         {
             get => _contacts;
             set => Set(ref _contacts, value);
