@@ -24,6 +24,7 @@ namespace DesktopApp
         private Advertiser? _advertiser;
         private readonly StartPage _startPage;
         private readonly SettingsPage _settingsPage;
+        private readonly ContactsPage _contactsPage;
 
         public static MainForm Reference { get; set; }
         public static IVersionService VersionService { get; private set; }
@@ -45,6 +46,7 @@ namespace DesktopApp
 
             _startPage = new StartPage();
             _settingsPage = new SettingsPage();
+            _contactsPage = new ContactsPage();
 
             Content = _startPage;
 
@@ -72,11 +74,23 @@ namespace DesktopApp
                 Content = _startPage;
             };
 
+            var contactsButton = new RadioToolItem
+            {
+                Image = Icons.ContactsIcon,
+                Text = "Contacts"
+            };
+            
+            contactsButton.Click += (_, __) =>
+            {
+                Content = _contactsPage;
+            };
+
             var settingsButton = new RadioToolItem()
             {
                 Image = Icons.SettingsIcon,
                 Text = "Settings",
             };
+            
             settingsButton.Click += (sender, args) =>
             {
                 Content = _settingsPage;
@@ -87,6 +101,7 @@ namespace DesktopApp
                 Items  =
                 {
                     startPageButton,
+                    contactsButton,
                     settingsButton
                 }
             };

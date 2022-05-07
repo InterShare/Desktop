@@ -28,6 +28,8 @@
     <None Remove="Resources\Settings.png" />
     <EmbeddedResource Include="Resources\Settings.png" />
     <None Remove="Resources\HouseTwo.png" />
+    <None Remove="Resources\Contacts.png" />
+    <EmbeddedResource Include="Resources\Contacts.png" />
   </ItemGroup>
 
 <!--  <ItemGroup>-->
