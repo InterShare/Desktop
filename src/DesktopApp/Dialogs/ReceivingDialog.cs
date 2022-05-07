@@ -5,6 +5,7 @@ using DesktopApp.Helpers;
 using Eto.Drawing;
 using Eto.Forms;
 using SMTSP.Entities;
+using SMTSP.Entities.Content;
 using Timer = System.Timers.Timer;
 
 namespace DesktopApp.Dialogs
@@ -13,14 +14,15 @@ namespace DesktopApp.Dialogs
     {
         private readonly Progress<long> _progress;
         private readonly ProgressBar _progressBar;
+        private readonly Spinner _progressSpinner;
         private readonly Label _progressBarText;
-        private readonly SmtsFile _file;
+        private readonly SmtspContent _content;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
-        public ReceivingDialog(Progress<long> progress, SmtsFile file, CancellationTokenSource cancellationToken)
+        public ReceivingDialog(Progress<long> progress, SmtspContent content, CancellationTokenSource cancellationToken)
         {
             _progress = progress;
-            _file = file;
+            _content = content;
             _cancellationTokenSource = cancellationToken;
             Title = "Receiving File";
             MinimumSize = new Size(SizeHelper.GetSize(300), SizeHelper.GetSize(300));
@@ -30,8 +32,16 @@ namespace DesktopApp.Dialogs
                 MinValue = 0,
                 MaxValue = 100
             };
+            
             _progressBar.Indeterminate = false;
             _progressBar.Value = 0;
+
+            _progressSpinner = new Spinner
+            {
+                Height = 30,
+                Width = 30,
+                Enabled = true
+            };
 
             _progressBarText = new Label
             {
@@ -48,7 +58,7 @@ namespace DesktopApp.Dialogs
                 {
                     _progressBarText,
                     null,
-                    _progressBar,
+                    _content is SmtspFileContent ? _progressBar : _progressSpinner,
                     null
                 }
             };
@@ -63,28 +73,32 @@ namespace DesktopApp.Dialogs
 
         private void ProgressOnProgressChanged(object sender, long bytesProcessed)
         {
-            Application.Instance.Invoke(() =>
+            if (_content is SmtspFileContent fileContent)
             {
-                try
+                Application.Instance.Invoke(() =>
                 {
-                    double progressValue = ((bytesProcessed / (double) _file.FileSize) * 100);
-                    _progressBar.Value = (int) progressValue;
-                    _progressBarText.Text = $"Receiving file...\n{progressValue:0.00}%";
-
-                    if (progressValue >= 100)
+                    try
                     {
-                        _progress.ProgressChanged -= ProgressOnProgressChanged;
-                        _progressBar.Value = 100;
-                        Thread.Sleep(500);
-                        CloseDialog();
+                        double progressValue = ((bytesProcessed / (double) fileContent.FileSize) * 100);
+                        _progressBar.Value = (int) progressValue;
+                        _progressBarText.Text = $"Receiving file...\n{progressValue:0.00}%";
+
+                        if (progressValue >= 100)
+                        {
+                            _progress.ProgressChanged -= ProgressOnProgressChanged;
+                            _progressBar.Value = 100;
+                            Thread.Sleep(500);
+                            CloseDialog();
+                        }
                     }
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine(exception);
-                }
-            });
+                    catch (Exception exception)
+                    {
+                        Console.WriteLine(exception);
+                    }
+                });
+            }
         }
+
 
         private void CloseDialogClicked(object sender, EventArgs e)
         {

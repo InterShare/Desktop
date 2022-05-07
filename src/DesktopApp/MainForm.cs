@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DesktopApp.Core;
 using DesktopApp.Dialogs;
+using DesktopApp.Dto;
 using DesktopApp.Entities;
 using DesktopApp.Extensions;
 using DesktopApp.Helpers;
@@ -18,6 +20,7 @@ using SMTSP.Advertisement;
 using SMTSP.Core;
 using SMTSP.Discovery.Entities;
 using SMTSP.Entities;
+using SMTSP.Entities.Content;
 
 namespace DesktopApp
 {
@@ -117,7 +120,7 @@ namespace DesktopApp
                 smtspReceiver.StartReceiving();
 
                 smtspReceiver.RegisterTransferRequestCallback(OnTransferRequestCallback);
-                smtspReceiver.OnFileReceive += OnFileReceived;
+                smtspReceiver.OnFileReceive += OnContentReceived;
 
                 Config<ConfigFile>.Values.MyDeviceInfo = new DeviceInfo()
                 {
@@ -150,11 +153,28 @@ namespace DesktopApp
             }
         }
 
-        private async void OnFileReceived(object sender, SmtsFile file)
+        private async void OnContentReceived(object sender, SmtspContent content)
+        {
+            if (content is SmtspFileContent fileContent)
+            {
+                HandleFileContentReceived(fileContent);
+            } else if (content is SmtspClipboardContent clipboardContent)
+            {
+                HandleClipboardContentReceived(clipboardContent);
+            }
+        }
+
+        private void HandleClipboardContentReceived(SmtspClipboardContent content)
+        {
+            var clipboard = Clipboard.Instance;
+            clipboard.SetDataStream(content.DataStream, DataFormats.Text);
+        }
+        
+        private async void HandleFileContentReceived(SmtspFileContent file)
         {
             try
             {
-                string fullPath = Path.Combine(Config<ConfigFile>.Values.DownloadPath, file.Name);
+                string fullPath = Path.Combine(Config<ConfigFile>.Values.DownloadPath, file.FileName);
 
                 var count = 1;
 
@@ -242,17 +262,23 @@ namespace DesktopApp
         {
             return Application.Instance.Invoke(() =>
             {
-                var contacts = Config<ConfigFile>.Values.Contacts;
-
+                var contacts = Config<ConfigFile>.Values.Contacts; 
+                
                 Contact? contact = contacts.SingleOrDefault(x => x.ContactId == transferRequest.SenderId);
 
                 if (contact != null && contact.AlwaysAllowReceivingContent)
                 {
                     return Task.FromResult(true);
                 }
-                
-                DialogResult answer = MessageBox.Show(
-                    $"{transferRequest.SenderName}\n wants to send you \"{transferRequest.FileName}\"\nAccept?",
+
+                var contentIsFile = transferRequest.Content is SmtspFileContent;
+
+                var msgText = contentIsFile
+                    ? $"{transferRequest.SenderName}\n wants to send you \"{((SmtspFileContent) transferRequest.Content).FileName}\"\nAccept?"
+                    : "{transferRequest.SenderName}\n wants to share the clipboard with you\nAccept?";
+
+                    DialogResult answer = MessageBox.Show(
+                    msgText,
                     MessageBoxButtons.YesNo, MessageBoxType.Question, MessageBoxDefaultButton.Yes);
 
                 if (answer == DialogResult.Yes)
