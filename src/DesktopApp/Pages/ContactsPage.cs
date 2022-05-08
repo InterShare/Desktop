@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Reactive.Linq;
 using DesktopApp.Core;
 using DesktopApp.Entities;
 using Eto.Drawing;
 using Eto.Forms;
 
-namespace DesktopApp.Dialogs
+namespace DesktopApp.Pages
 {
     public class ContactsPage : Panel
     {
@@ -19,7 +18,7 @@ namespace DesktopApp.Dialogs
         public ContactsPage()
         {
             LoadContacts();
-            
+
             _contactsGrid = new GridView();
             var layout = new DynamicLayout
             {
@@ -28,9 +27,9 @@ namespace DesktopApp.Dialogs
             };
 
             layout.Add(_contactsGrid);
-            
+
             DrawContactsList();
-            
+
             Content = layout;
         }
 
@@ -43,14 +42,14 @@ namespace DesktopApp.Dialogs
                 DataCell = new TextBoxCell("ContactName"),
                 Expand = true
             });
-            
+
             _contactsGrid.Columns.Add(new GridColumn
             {
                 HeaderText = "Always Allow",
                 DataCell = new CheckBoxCell("AlwaysAllowReceivingContent"),
                 Editable = true
             });
-            
+
             _contactsGrid.Columns.Add(new GridColumn
             {
                 HeaderText = "Sync Clipboard",
@@ -60,7 +59,7 @@ namespace DesktopApp.Dialogs
 
             _contactsGrid.DataStore = _contacts;
         }
-        
+
         private void LoadContacts()
         {
             _contacts = Config<ConfigFile>.Values.Contacts;
@@ -70,7 +69,7 @@ namespace DesktopApp.Dialogs
             {
                 s.Dispose();
             }
-            
+
             _subscribedContacts.Clear();
 
             foreach (var contact in _contacts)
@@ -81,7 +80,7 @@ namespace DesktopApp.Dialogs
                         Config<ConfigFile>.Update();
                     })
                 );
-                
+
                 _subscribedContacts.Add(
                     contact.SyncClipboardObservable.Subscribe(x =>
                     {
@@ -90,7 +89,7 @@ namespace DesktopApp.Dialogs
                 );
             }
         }
-        
+
         private void ContactsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             LoadContacts();
