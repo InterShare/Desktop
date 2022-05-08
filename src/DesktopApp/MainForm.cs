@@ -68,34 +68,33 @@ namespace DesktopApp
 
         private ToolBar CreateToolbar()
         {
-            var startPageButton = new RadioToolItem()
+            var startPageButton = new ButtonToolItem()
             {
-                Image = Icons.HomeIcon,
-                Text = "Start",
-                Checked = true
+                Image = Icons.SendIcon,
+                Text = "Send"
             };
             startPageButton.Click += (sender, args) =>
             {
                 Content = _startPage;
             };
 
-            var contactsButton = new RadioToolItem
+            var contactsButton = new ButtonToolItem()
             {
-                Image = Icons.ContactsIcon,
+                Image = Icons.AddressBookIcon,
                 Text = "Contacts"
             };
-            
+
             contactsButton.Click += (_, __) =>
             {
                 Content = _contactsPage;
             };
 
-            var settingsButton = new RadioToolItem()
+            var settingsButton = new ButtonToolItem()
             {
-                Image = Icons.SettingsIcon,
+                Image = Icons.GearIcon,
                 Text = "Settings",
             };
-            
+
             settingsButton.Click += (sender, args) =>
             {
                 Content = _settingsPage;
@@ -103,6 +102,7 @@ namespace DesktopApp
 
             return new ToolBar()
             {
+                TextAlign = ToolBarTextAlign.Underneath,
                 Items  =
                 {
                     startPageButton,
@@ -169,7 +169,7 @@ namespace DesktopApp
             var clipboard = Clipboard.Instance;
             clipboard.SetDataStream(content.DataStream, DataFormats.Text);
         }
-        
+
         private async void HandleFileContentReceived(SmtspFileContent file)
         {
             try
@@ -262,8 +262,8 @@ namespace DesktopApp
         {
             return Application.Instance.Invoke(() =>
             {
-                var contacts = Config<ConfigFile>.Values.Contacts; 
-                
+                var contacts = Config<ConfigFile>.Values.Contacts;
+
                 Contact? contact = contacts.SingleOrDefault(x => x.ContactId == transferRequest.SenderId);
 
                 if (contact != null && contact.AlwaysAllowReceivingContent)
@@ -294,11 +294,11 @@ namespace DesktopApp
                             AlwaysAllowReceivingContent = false,
                             SyncClipboard = false
                         };
-                        
+
                         Config<ConfigFile>.Values.Contacts.Add(contact);
                         Config<ConfigFile>.Update();
                     }
-                    
+
                     return Task.FromResult(true);
                 }
 

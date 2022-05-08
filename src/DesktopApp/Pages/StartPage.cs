@@ -60,6 +60,7 @@ namespace DesktopApp.Pages
         {
             var sendFileButton = new Button
             {
+                Image = Icons.FileIcon,
                 Text = "Send File"
             };
 
@@ -67,6 +68,7 @@ namespace DesktopApp.Pages
 
             var sendClipboardButton = new Button
             {
+                Image = Icons.ClipboardIcon,
                 Text = "Send Clipboard"
             };
 
@@ -84,7 +86,7 @@ namespace DesktopApp.Pages
                     {
                         null,
                         new StackLayoutItem(sendFileButton),
-                        null,
+                        new StackLayoutItem(new Label()),
                         new StackLayoutItem(sendClipboardButton),
                         null
                     }
@@ -182,13 +184,13 @@ namespace DesktopApp.Pages
                 {
                     DataStream = contentStream
                 };
-                
+
                 var dialog = new SendDialog(content)
                 {
                     DisplayMode = DialogDisplayMode.Attached
                 };
-                
-                
+
+
                 await dialog.ShowModalAsync(MainForm.Reference);
             }
         }

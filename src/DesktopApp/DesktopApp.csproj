@@ -24,13 +24,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\House.png" />
-    <EmbeddedResource Include="Resources\House.png" />
-    <None Remove="Resources\Settings.png" />
-    <EmbeddedResource Include="Resources\Settings.png" />
-    <None Remove="Resources\HouseTwo.png" />
-    <None Remove="Resources\Contacts.png" />
-    <EmbeddedResource Include="Resources\Contacts.png" />
+    <None Remove="Resources\send.png" />
+    <EmbeddedResource Include="Resources\send.png" />
+    <None Remove="Resources\address-book.png" />
+    <EmbeddedResource Include="Resources\address-book.png" />
+    <None Remove="Resources\gear.png" />
+    <EmbeddedResource Include="Resources\gear.png" />
+    <None Remove="Resources\file.png" />
+    <EmbeddedResource Include="Resources\file.png" />
+    <None Remove="Resources\clipboard.png" />
+    <EmbeddedResource Include="Resources\clipboard.png" />
   </ItemGroup>
 
 <!--  <ItemGroup>-->
