@@ -42,10 +42,11 @@ namespace DesktopApp
             AppCore.Initialize();
 
             Reference = this;
+            Style = "unified";
 
             Title = "InterShare";
             Maximizable = false;
-            MinimumSize = new Size(SizeHelper.GetSize(400), SizeHelper.GetSize(350));
+            MinimumSize = new Size(SizeHelper.GetSize(350), SizeHelper.GetSize(300));
             Menu = new MenuBar();
             ToolBar = CreateToolbar();
 
@@ -68,17 +69,18 @@ namespace DesktopApp
 
         private ToolBar CreateToolbar()
         {
-            var startPageButton = new ButtonToolItem()
+            var startPageButton = new RadioToolItem()
             {
                 Image = Icons.SendIcon,
-                Text = "Send"
+                Text = "Send",
+                Checked = true
             };
             startPageButton.Click += (sender, args) =>
             {
                 Content = _startPage;
             };
 
-            var contactsButton = new ButtonToolItem()
+            var contactsButton = new RadioToolItem()
             {
                 Image = Icons.AddressBookIcon,
                 Text = "Contacts"
@@ -89,7 +91,7 @@ namespace DesktopApp
                 Content = _contactsPage;
             };
 
-            var settingsButton = new ButtonToolItem()
+            var settingsButton = new RadioToolItem()
             {
                 Image = Icons.GearIcon,
                 Text = "Settings",
@@ -105,6 +107,10 @@ namespace DesktopApp
                 TextAlign = ToolBarTextAlign.Underneath,
                 Items  =
                 {
+                    new SeparatorToolItem()
+                    {
+                        Type = SeparatorToolItemType.FlexibleSpace
+                    },
                     startPageButton,
                     contactsButton,
                     settingsButton

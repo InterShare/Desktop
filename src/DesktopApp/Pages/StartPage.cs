@@ -60,7 +60,7 @@ namespace DesktopApp.Pages
         {
             var sendFileButton = new Button
             {
-                Image = Icons.FileIcon,
+                // Image = Icons.FileIcon,
                 Text = "Send File"
             };
 
@@ -68,7 +68,7 @@ namespace DesktopApp.Pages
 
             var sendClipboardButton = new Button
             {
-                Image = Icons.ClipboardIcon,
+                // Image = Icons.ClipboardIcon,
                 Text = "Send Clipboard"
             };
 
