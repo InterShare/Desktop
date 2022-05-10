@@ -1,6 +1,7 @@
 ﻿using System;
 using DesktopApp.Gtk.Services;
-using Eto.Forms;
+using Gtk;
+using Application = Eto.Forms.Application;
 
 namespace DesktopApp.Gtk
 {
