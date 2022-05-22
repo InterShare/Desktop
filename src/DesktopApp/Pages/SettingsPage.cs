@@ -65,18 +65,7 @@ namespace DesktopApp.Pages
                 }
             };
 
-            const string link = "https://intershare.julba.de";
-
-            var websiteLink = new LinkButton()
-            {
-                Text = link
-            };
-
-            websiteLink.Click += delegate
-            {
-                Process.Start(link);
-            };
-
+           
             var aboutBox = new GroupBox()
             {
                 Padding = 5,
@@ -85,15 +74,20 @@ namespace DesktopApp.Pages
                     {
                         TextAlignment = TextAlignment.Center,
                         Text = $"Version: {_version}\n",
+                        Font = Fonts.Monospace(8),
                         TextColor = Color.FromGrayscale(0.6f)
                     },
                     new Label
                     {
                         TextAlignment = TextAlignment.Center,
+                        Font = Fonts.Monospace(8),
                         Text = "Developer: Julian Baumann",
                         TextColor = Color.FromGrayscale(0.6f)
                     },
-                    websiteLink
+                    new Label
+                    {
+                        Text = "https://intershare.julba.de"
+                    }
                 )
                 {
                     HorizontalContentAlignment = HorizontalAlignment.Center
@@ -104,74 +98,6 @@ namespace DesktopApp.Pages
             layout.Add(aboutBox);
 
             Content = layout;
-            // layout.Add(_addressLabel, yscale: false);
-            //
-            // Content = new TableLayout
-            // {
-            //     Spacing = new Size(0, 10),
-            //     Padding = 20,
-            //     Rows =
-            //     {
-            //         new TableRow
-            //         {
-            //             Cells =
-            //             {
-            //                 new Label
-            //                 {
-            //                     VerticalAlignment = VerticalAlignment.Center,
-            //                     TextAlignment = TextAlignment.Right,
-            //                     Text = "Download folder: ",
-            //                     TextColor = Color.FromGrayscale(0.6f)
-            //                 },
-            //                 new TableCell(downloadPathTextBox, true),
-            //                 new TableCell(changeDownloadPathButton, false)
-            //             }
-            //         },
-            //         new TableRow
-            //         {
-            //             Cells =
-            //             {
-            //                 new Label
-            //                 {
-            //                     VerticalAlignment = VerticalAlignment.Center,
-            //                     TextAlignment = TextAlignment.Right,
-            //                     Text = "Device name: ",
-            //                     TextColor = Color.FromGrayscale(0.6f)
-            //                 },
-            //                 deviceNameTextBox
-            //             }
-            //         },
-            //         null,
-            //         new TableRow
-            //         {
-            //             Cells =
-            //             {
-            //                 new TableCell(),
-            //                 new GroupBox()
-            //                 {
-            //                     Padding = 5,
-            //                     Content = new StackLayout(new Label
-            //                         {
-            //                             TextAlignment = TextAlignment.Center,
-            //                             Text = $"Version: {_version}\n",
-            //                             TextColor = Color.FromGrayscale(0.6f),
-            //                             Font = SystemFonts.Default(Platform.IsMac ? 10.0f : 7.0f)
-            //                         },
-            //                         new Label
-            //                         {
-            //                             TextAlignment = TextAlignment.Center,
-            //                             Text = "Author: Julian Baumann\nhttps://julian-baumann.com",
-            //                             TextColor = Color.FromGrayscale(0.6f),
-            //                             Font = SystemFonts.Default(Platform.IsMac ? 10.0f : 7.0f)
-            //                         })
-            //                     {
-            //                         HorizontalContentAlignment = HorizontalAlignment.Center
-            //                     }
-            //                 }
-            //             }
-            //         }
-            //     }
-            // };
         }
 
         private void OnChangeDownloadPathClicked(object sender, EventArgs e)
