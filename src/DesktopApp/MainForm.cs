@@ -45,7 +45,7 @@ namespace DesktopApp
 
             Title = "InterShare";
             Maximizable = false;
-            MinimumSize = new Size(SizeHelper.GetSize(350), SizeHelper.GetSize(330));
+            MinimumSize = new Size(SizeHelper.GetSize(350), SizeHelper.GetSize(Platform.IsMac ? 300 : 330));
             Menu = new MenuBar();
             ToolBar = CreateToolbar();
 

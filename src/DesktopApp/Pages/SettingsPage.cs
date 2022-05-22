@@ -65,7 +65,7 @@ namespace DesktopApp.Pages
                 }
             };
 
-           
+
             var aboutBox = new GroupBox()
             {
                 Padding = 5,
@@ -74,19 +74,21 @@ namespace DesktopApp.Pages
                     {
                         TextAlignment = TextAlignment.Center,
                         Text = $"Version: {_version}\n",
-                        Font = Fonts.Monospace(8),
+                        Font = Platform.IsMac ? Fonts.Monospace(10) : Fonts.Monospace(8),
                         TextColor = Color.FromGrayscale(0.6f)
                     },
                     new Label
                     {
                         TextAlignment = TextAlignment.Center,
-                        Font = Fonts.Monospace(8),
+                        Font = Platform.IsMac ? Fonts.Monospace(10) : Fonts.Monospace(8),
                         Text = "Developer: Julian Baumann",
                         TextColor = Color.FromGrayscale(0.6f)
                     },
                     new Label
                     {
-                        Text = "https://intershare.julba.de"
+                        Text = "https://intershare.julba.de",
+                        Font = Platform.IsMac ? Fonts.Monospace(10) : Fonts.Monospace(8),
+                        TextColor = Color.FromGrayscale(0.6f)
                     }
                 )
                 {
