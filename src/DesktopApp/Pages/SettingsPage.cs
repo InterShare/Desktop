@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using DesktopApp.Core;
 using Eto.Drawing;
 using Eto.Forms;
@@ -28,109 +29,149 @@ namespace DesktopApp.Pages
             deviceNameTextBox.TextBinding.Bind(Config<ConfigFile>.Values, n => n.DeviceName);
             deviceNameTextBox.TextChanged += (sender, args) => Config<ConfigFile>.Update();
 
-            bool useMdns = Config<ConfigFile>.Values.UseMdnsForDiscovery;
-
-            var useMdnsRadioButton = new RadioButton
+            var layout = new DynamicLayout
             {
-                Text = "MDNS-SD",
-                Checked = useMdns
-            };
-            useMdnsRadioButton.CheckedChanged += (sender, args) =>
-            {
-                Config<ConfigFile>.Values.UseMdnsForDiscovery = true;
-                Config<ConfigFile>.Update();
+                DefaultSpacing = new Size(5, 5),
+                Padding = new Padding(15)
             };
 
-            var useUdpBroadcastsRadioButton = new RadioButton(useMdnsRadioButton)
+            var mainContent = new StackLayout()
             {
-                Text = "UDP Broadcasts",
-                Checked = !useMdns
-            };
-            useUdpBroadcastsRadioButton.CheckedChanged += (sender, args) =>
-            {
-                Config<ConfigFile>.Values.UseMdnsForDiscovery = false;
-                Config<ConfigFile>.Update();
-            };
-
-            Content = new TableLayout
-            {
-                Spacing = new Size(0, 10),
-                Padding = 20,
-                Rows =
+                Items =
                 {
-                    new TableRow
+                    new Label
                     {
-                        Cells =
-                        {
-                            new Label
-                            {
-                                VerticalAlignment = VerticalAlignment.Center,
-                                TextAlignment = TextAlignment.Right,
-                                Text = "Download folder: ",
-                                TextColor = Color.FromGrayscale(0.6f)
-                            },
-                            new TableCell(downloadPathTextBox, true),
-                            new TableCell(changeDownloadPathButton, false)
-                        }
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Text = "Download folder:",
+                        TextColor = Color.FromGrayscale(0.6f)
                     },
-                    new TableRow
+                    new StackLayoutItem(new StackLayout()
                     {
-                        Cells =
+                        Orientation = Orientation.Horizontal,
+                        Items =
                         {
-                            new Label
-                            {
-                                VerticalAlignment = VerticalAlignment.Center,
-                                TextAlignment = TextAlignment.Right,
-                                Text = "Device name: ",
-                                TextColor = Color.FromGrayscale(0.6f)
-                            },
-                            deviceNameTextBox
+                            new StackLayoutItem(downloadPathTextBox, true),
+                            changeDownloadPathButton
                         }
-                    },
-                    new TableRow
+                    }, HorizontalAlignment.Stretch),
+                    new Label(),
+                    new Label
                     {
-                        Cells =
-                        {
-                            new Label
-                            {
-                                TextAlignment = TextAlignment.Right,
-                                Text = "Discovery: ",
-                                TextColor = Color.FromGrayscale(0.6f)
-                            },
-                            new DynamicLayout(useMdnsRadioButton, useUdpBroadcastsRadioButton)
-                        }
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Text = "Device name:",
+                        TextColor = Color.FromGrayscale(0.6f)
                     },
-                    null,
-                    new TableRow
-                    {
-                        Cells =
-                        {
-                            new TableCell(),
-                            new GroupBox()
-                            {
-                                Padding = 5,
-                                Content = new StackLayout(new Label
-                                    {
-                                        TextAlignment = TextAlignment.Center,
-                                        Text = $"Version: {_version}\n",
-                                        TextColor = Color.FromGrayscale(0.6f),
-                                        Font = SystemFonts.Default(Platform.IsMac ? 10.0f : 7.0f)
-                                    },
-                                    new Label
-                                    {
-                                        TextAlignment = TextAlignment.Center,
-                                        Text = "Author: Julian Baumann\nhttps://julian-baumann.com",
-                                        TextColor = Color.FromGrayscale(0.6f),
-                                        Font = SystemFonts.Default(Platform.IsMac ? 10.0f : 7.0f)
-                                    })
-                                {
-                                    HorizontalContentAlignment = HorizontalAlignment.Center
-                                }
-                            }
-                        }
-                    },
+                    new StackLayoutItem(deviceNameTextBox, HorizontalAlignment.Stretch)
                 }
             };
+
+            const string link = "https://intershare.julba.de";
+
+            var websiteLink = new LinkButton()
+            {
+                Text = link
+            };
+
+            websiteLink.Click += delegate
+            {
+                Process.Start(link);
+            };
+
+            var aboutBox = new GroupBox()
+            {
+                Padding = 5,
+                Content = new StackLayout(
+                    new Label
+                    {
+                        TextAlignment = TextAlignment.Center,
+                        Text = $"Version: {_version}\n",
+                        TextColor = Color.FromGrayscale(0.6f)
+                    },
+                    new Label
+                    {
+                        TextAlignment = TextAlignment.Center,
+                        Text = "Developer: Julian Baumann",
+                        TextColor = Color.FromGrayscale(0.6f)
+                    },
+                    websiteLink
+                )
+                {
+                    HorizontalContentAlignment = HorizontalAlignment.Center
+                }
+            };
+
+            layout.Add(mainContent, yscale: true, xscale: true);
+            layout.Add(aboutBox);
+
+            Content = layout;
+            // layout.Add(_addressLabel, yscale: false);
+            //
+            // Content = new TableLayout
+            // {
+            //     Spacing = new Size(0, 10),
+            //     Padding = 20,
+            //     Rows =
+            //     {
+            //         new TableRow
+            //         {
+            //             Cells =
+            //             {
+            //                 new Label
+            //                 {
+            //                     VerticalAlignment = VerticalAlignment.Center,
+            //                     TextAlignment = TextAlignment.Right,
+            //                     Text = "Download folder: ",
+            //                     TextColor = Color.FromGrayscale(0.6f)
+            //                 },
+            //                 new TableCell(downloadPathTextBox, true),
+            //                 new TableCell(changeDownloadPathButton, false)
+            //             }
+            //         },
+            //         new TableRow
+            //         {
+            //             Cells =
+            //             {
+            //                 new Label
+            //                 {
+            //                     VerticalAlignment = VerticalAlignment.Center,
+            //                     TextAlignment = TextAlignment.Right,
+            //                     Text = "Device name: ",
+            //                     TextColor = Color.FromGrayscale(0.6f)
+            //                 },
+            //                 deviceNameTextBox
+            //             }
+            //         },
+            //         null,
+            //         new TableRow
+            //         {
+            //             Cells =
+            //             {
+            //                 new TableCell(),
+            //                 new GroupBox()
+            //                 {
+            //                     Padding = 5,
+            //                     Content = new StackLayout(new Label
+            //                         {
+            //                             TextAlignment = TextAlignment.Center,
+            //                             Text = $"Version: {_version}\n",
+            //                             TextColor = Color.FromGrayscale(0.6f),
+            //                             Font = SystemFonts.Default(Platform.IsMac ? 10.0f : 7.0f)
+            //                         },
+            //                         new Label
+            //                         {
+            //                             TextAlignment = TextAlignment.Center,
+            //                             Text = "Author: Julian Baumann\nhttps://julian-baumann.com",
+            //                             TextColor = Color.FromGrayscale(0.6f),
+            //                             Font = SystemFonts.Default(Platform.IsMac ? 10.0f : 7.0f)
+            //                         })
+            //                     {
+            //                         HorizontalContentAlignment = HorizontalAlignment.Center
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //     }
+            // };
         }
 
         private void OnChangeDownloadPathClicked(object sender, EventArgs e)

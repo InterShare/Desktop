@@ -1,12 +1,9 @@
 using System;
 using System.Threading;
-using System.Timers;
 using DesktopApp.Helpers;
 using Eto.Drawing;
 using Eto.Forms;
-using SMTSP.Entities;
 using SMTSP.Entities.Content;
-using Timer = System.Timers.Timer;
 
 namespace DesktopApp.Dialogs
 {
@@ -16,10 +13,10 @@ namespace DesktopApp.Dialogs
         private readonly ProgressBar _progressBar;
         private readonly Spinner _progressSpinner;
         private readonly Label _progressBarText;
-        private readonly SmtspContent _content;
+        private readonly SmtspContentBase _content;
         private readonly CancellationTokenSource _cancellationTokenSource;
 
-        public ReceivingDialog(Progress<long> progress, SmtspContent content, CancellationTokenSource cancellationToken)
+        public ReceivingDialog(Progress<long> progress, SmtspContentBase content, CancellationTokenSource cancellationToken)
         {
             _progress = progress;
             _content = content;
@@ -32,7 +29,7 @@ namespace DesktopApp.Dialogs
                 MinValue = 0,
                 MaxValue = 100
             };
-            
+
             _progressBar.Indeterminate = false;
             _progressBar.Value = 0;
 

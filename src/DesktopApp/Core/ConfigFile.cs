@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reflection;
@@ -13,7 +12,6 @@ namespace DesktopApp.Core
     {
         private string _downloadPath;
         private string _deviceName;
-        private bool _useMdnsForDiscovery = true;
         private ObservableCollection<Contact> _contacts = new ObservableCollection<Contact>();
 
         [JsonIgnore]
@@ -36,13 +34,6 @@ namespace DesktopApp.Core
         [JsonPropertyName("deviceId")]
         public string DeviceIdentifier { get; set; }
 
-        [JsonPropertyName("useMdnsForDiscovery")]
-        public bool UseMdnsForDiscovery
-        {
-            get => _useMdnsForDiscovery;
-            set => Set(ref _useMdnsForDiscovery, value);
-        }
-        
         [JsonPropertyName("contacts")]
         public ObservableCollection<Contact> Contacts
         {
