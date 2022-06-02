@@ -13,9 +13,9 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
     name: Build
+    environment: Build
     with:
-        version: ${{ github.event.inputs.version }}
-
+      version: ${{ github.event.inputs.version }}
 
   create-release:
     runs-on: ubuntu-latest
