@@ -1,9 +1,12 @@
 name: Build
 
 on:
-  push:
-    branches:
-      - '**'
+  workflow_call:
+    inputs:
+      version:
+        description: "Version number"
+        default: "0.0.0"
+        required: true
 
 jobs:
   macOS:
@@ -12,8 +15,6 @@ jobs:
     environment: Build
     steps:
     - uses: actions/checkout@v2
-      with:
-          fetch-depth: 0
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
@@ -42,17 +43,6 @@ jobs:
         dotnet restore src/DesktopApp/DesktopApp.csproj
         nuget restore src/DesktopApp.XamMac/DesktopApp.XamMac.csproj
 
-    - name: Get Previous tag
-      id: latest_tag
-      uses: "WyriHaximus/github-action-get-previous-tag@v1"
-      with:
-        fallback: 0.0.0
-
-    - name: Extract branch name
-      shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch
-
     - name: Build
       env:
         PROJECT_NAME: "InterShare"
@@ -63,10 +53,8 @@ jobs:
         APPLE_ID: ${{ secrets.APPLE_ID }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-        BUILD_VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
       run: |
-        CLEAN_VERSION=$(echo "$BUILD_VERSION" | sed -r 's/[\/]+/-/g')
-        ./.github/workflows/scripts/build-mac.sh "$CLEAN_VERSION"
+        ./.github/workflows/scripts/build-mac.sh "${{ github.event.inputs.version }}"
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
@@ -79,8 +67,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-          fetch-depth: 0
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
@@ -92,49 +78,35 @@ jobs:
         dotnet restore src/DesktopApp/DesktopApp.csproj
         dotnet restore src/DesktopApp.Gtk/DesktopApp.Gtk.csproj
 
-    - name: Get Previous tag
-      id: latest_tag
-      uses: "WyriHaximus/github-action-get-previous-tag@v1"
-      with:
-        fallback: 0.0.0
-
-    - name: Extract branch name
-      shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch
-
     - name: Build
       env:
         BUILD_VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ steps.extract_branch.outputs.branch }}
       run: |
-        CLEAN_VERSION=$(echo "$BUILD_VERSION" | sed -r 's/[\/]+/-/g')
         dotnet publish /p:PublishSingleFile=true \
                       /p:IncludeNativeLibrariesForSelfExtract=true \
                       --self-contained true \
                       -o ${{ github.workspace }}/build \
                       -c Release \
-                      /property:Version="$CLEAN_VERSION" \
+                      /property:Version="${{ github.event.inputs.version }}" \
                       -r linux-x64 \
                       src/DesktopApp.Gtk/DesktopApp.Gtk.csproj
 
     - name: Create tar.gz
       run: |
         cd ${{ github.workspace }}/build
-        tar -czvf InterShare.Linux.tar.gz InterShare
+        tar -czvf InterShare.Linux-${{ github.event.inputs.version }}.tar.gz InterShare
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: linux-binary
-        path: ${{ github.workspace }}/build/InterShare.Linux.tar.gz
+        path: ${{ github.workspace }}/build/InterShare.Linux-${{ github.event.inputs.version }}.tar.gz
 
   windows:
     name: Build Windows
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-          fetch-depth: 0
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
@@ -146,29 +118,26 @@ jobs:
         dotnet restore src/DesktopApp/DesktopApp.csproj
         dotnet restore src/DesktopApp.Wpf/DesktopApp.Wpf.csproj
 
-    - name: Get latest tag
-      id: latest_tag
-      uses: "WyriHaximus/github-action-get-previous-tag@v1"
-      with:
-        fallback: 0.0.0
-
     - name: Build
       run: |
-        $Branch_Name = $Env:GITHUB_REF -replace 'refs/heads/', '';
-        $Build_Version = "${{ steps.latest_tag.outputs.tag }}-$Branch_Name";
-        $Clean_Version = $Build_Version -Replace '\/|\[|\]|\+','-';
         dotnet publish /p:PublishSingleFile=true `
                       /p:IncludeNativeLibrariesForSelfExtract=true `
                       /p:PublishTrimmed=true `
                       --self-contained true `
                       -o ${{ github.workspace }}/build `
                       -c Release `
-                      /property:Version="$Clean_Version" `
+                      /property:Version="${{ github.event.inputs.version }}" `
                       -r win-x64 `
                       src/DesktopApp.Wpf/DesktopApp.Wpf.csproj
+
+    - name: Zip files
+      run: |
+        pushd "${{ github.workspace }}/build";
+        Compress-Archive -Path InterShare.exe -DestinationPath "InterShare.Windows-${{ github.event.inputs.version }}.zip"
+        popd;
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: windows
-        path: ${{ github.workspace }}/build/InterShare.exe
+        path: "${{ github.workspace }}/build/InterShare.Windows-${{ github.event.inputs.version }}.zip"

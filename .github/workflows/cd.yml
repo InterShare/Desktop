@@ -1,0 +1,45 @@
+name: CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number"
+        default: "0.0.0"
+        required: true
+
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    name: Build
+    with:
+        version: ${{ github.event.inputs.version }}
+
+
+  create-release:
+    runs-on: ubuntu-latest
+    name: Create Release
+    needs: [macOS, linux-binary, windows]
+    steps:
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: ${{ github.workspace }}/downloads
+
+    - name: Create Release strings
+      id: release_strings
+      run: |
+        echo "RELEASE_TAG=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+        echo "RELEASE_NAME=Version ${{ github.event.inputs.version }}" >> $GITHUB_ENV
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ env.RELEASE_TAG }}
+        name: ${{ env.RELEASE_NAME }}
+        files: |
+          ${{ github.workspace }}/downloads/linux-binary/InterShare.Linux-${{ github.event.inputs.version }}.tar.gz
+          ${{ github.workspace }}/downloads/macOS/InterShare.macOS-${{ github.event.inputs.version }}.zip
+          ${{ github.workspace }}/downloads/windows/InterShare.Windows-${{ github.event.inputs.version }}.zip
