@@ -1,6 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -17,10 +15,11 @@ using Eto.Drawing;
 using Eto.Forms;
 using SMTSP;
 using SMTSP.Advertisement;
-using SMTSP.Core;
 using SMTSP.Discovery.Entities;
 using SMTSP.Entities;
 using SMTSP.Entities.Content;
+using TextCopy;
+using Clipboard = Eto.Forms.Clipboard;
 
 namespace DesktopApp
 {
@@ -46,7 +45,7 @@ namespace DesktopApp
 
             Title = "InterShare";
             Maximizable = false;
-            MinimumSize = new Size(SizeHelper.GetSize(350), SizeHelper.GetSize(300));
+            MinimumSize = new Size(SizeHelper.GetSize(350), SizeHelper.GetSize(Platform.IsMac ? 300 : 330));
             Menu = new MenuBar();
             ToolBar = CreateToolbar();
 
@@ -104,7 +103,7 @@ namespace DesktopApp
 
             return new ToolBar()
             {
-                TextAlign = ToolBarTextAlign.Underneath,
+                TextAlign = ToolBarTextAlign.Right,
                 Items  =
                 {
                     new SeparatorToolItem()
@@ -126,7 +125,7 @@ namespace DesktopApp
                 smtspReceiver.StartReceiving();
 
                 smtspReceiver.RegisterTransferRequestCallback(OnTransferRequestCallback);
-                smtspReceiver.OnFileReceive += OnContentReceived;
+                smtspReceiver.OnContentReceive += OnContentReceived;
 
                 Config<ConfigFile>.Values.MyDeviceInfo = new DeviceInfo()
                 {
@@ -138,9 +137,8 @@ namespace DesktopApp
 
                 StartPage.ChangeDeviceInfo(Config<ConfigFile>.Values.MyDeviceInfo.Port);
 
-                _advertiser = new Advertiser(Config<ConfigFile>.Values.MyDeviceInfo, Config<ConfigFile>.Values.UseMdnsForDiscovery ? DiscoveryTypes.Mdns : DiscoveryTypes.UdpBroadcasts);
+                _advertiser = new Advertiser(Config<ConfigFile>.Values.MyDeviceInfo);
                 _advertiser.Advertise();
-                Config<ConfigFile>.Values.PropertyChanged += ConfigPropertyChanged;
             }
             catch (Exception exception)
             {
@@ -148,18 +146,7 @@ namespace DesktopApp
             }
         }
 
-        private void ConfigPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(ConfigFile.UseMdnsForDiscovery))
-            {
-                _advertiser?.StopAdvertising();
-                _advertiser?.Dispose();
-                _advertiser = new Advertiser(Config<ConfigFile>.Values.MyDeviceInfo, Config<ConfigFile>.Values.UseMdnsForDiscovery ? DiscoveryTypes.Mdns : DiscoveryTypes.UdpBroadcasts);
-                _advertiser.Advertise();
-            }
-        }
-
-        private async void OnContentReceived(object sender, SmtspContent content)
+        private async void OnContentReceived(object sender, SmtspContentBase content)
         {
             if (content is SmtspFileContent fileContent)
             {
@@ -172,8 +159,17 @@ namespace DesktopApp
 
         private void HandleClipboardContentReceived(SmtspClipboardContent content)
         {
-            var clipboard = Clipboard.Instance;
-            clipboard.SetDataStream(content.DataStream, DataFormats.Text);
+            var reader = new StreamReader(content.DataStream!);
+            string text = reader.ReadToEnd();
+
+            try
+            {
+                ClipboardService.SetText(text);
+            }
+            catch (Exception)
+            {
+                Clipboard.Instance.SetString(text, DataFormats.Text);
+            }
         }
 
         private async void HandleFileContentReceived(SmtspFileContent file)
@@ -182,7 +178,7 @@ namespace DesktopApp
             {
                 string fullPath = Path.Combine(Config<ConfigFile>.Values.DownloadPath, file.FileName);
 
-                var count = 1;
+                int count = 1;
 
                 string fileNameOnly = Path.GetFileNameWithoutExtension(fullPath);
                 string extension = Path.GetExtension(fullPath);
@@ -200,7 +196,7 @@ namespace DesktopApp
                     newFullPath = Path.Combine(path, tempFileName + extension);
                 }
 
-                using FileStream fileStream = File.Create(newFullPath);
+                await using FileStream fileStream = File.Create(newFullPath);
 
                 var cancellationTokenSource = new CancellationTokenSource();
 
@@ -277,10 +273,10 @@ namespace DesktopApp
                     return Task.FromResult(true);
                 }
 
-                var contentIsFile = transferRequest.Content is SmtspFileContent;
+                var contentIsFile = transferRequest.ContentBase is SmtspFileContent;
 
                 var msgText = contentIsFile
-                    ? $"{transferRequest.SenderName}\n wants to send you \"{((SmtspFileContent) transferRequest.Content).FileName}\"\nAccept?"
+                    ? $"{transferRequest.SenderName}\n wants to send you \"{((SmtspFileContent) transferRequest.ContentBase).FileName}\"\nAccept?"
                     : $"{transferRequest.SenderName}\n wants to share the clipboard with you\nAccept?";
 
                     DialogResult answer = MessageBox.Show(

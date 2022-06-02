@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Web;
@@ -8,7 +7,8 @@ using DesktopApp.Dialogs;
 using DesktopApp.Dto;
 using Eto.Forms;
 using Eto.Drawing;
-using SMTSP.Entities.Content;
+using TextCopy;
+using Clipboard = Eto.Forms.Clipboard;
 
 namespace DesktopApp.Pages
 {
@@ -169,30 +169,38 @@ namespace DesktopApp.Pages
 
         private async void SendFromClipboard(object sender, EventArgs e)
         {
-            var clipboard = Clipboard.Instance;
-            Stream? contentStream = null;
+            string? textFromClipboard = null;
 
-            if (clipboard.ContainsText)
+            try
             {
-                var text = clipboard.Text;
-                contentStream = new MemoryStream(Encoding.UTF8.GetBytes(text));
+                textFromClipboard = await ClipboardService.GetTextAsync();
+            }
+            catch (Exception)
+            {
+                if (Clipboard.Instance.ContainsText)
+                {
+                    textFromClipboard = Clipboard.Instance.Text;
+                }
             }
 
-            if (contentStream != null)
+            if (textFromClipboard == null)
             {
-                var content = new SmtspClipboardContent
-                {
-                    DataStream = contentStream
-                };
-
-                var dialog = new SendDialog(content)
-                {
-                    DisplayMode = DialogDisplayMode.Attached
-                };
-
-
-                await dialog.ShowModalAsync(MainForm.Reference);
+                return;
             }
+
+            Stream contentStream = new MemoryStream(Encoding.UTF8.GetBytes(textFromClipboard));
+
+            var content = new SmtspClipboardContent
+            {
+                DataStream = contentStream
+            };
+
+            var dialog = new SendDialog(content)
+            {
+                DisplayMode = DialogDisplayMode.Attached
+            };
+
+            await dialog.ShowModalAsync(MainForm.Reference);
         }
     }
 }

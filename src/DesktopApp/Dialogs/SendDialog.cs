@@ -24,7 +24,7 @@ namespace DesktopApp.Dialogs
         private readonly Label _progressBarLabel = new Label();
         private readonly CancellationTokenSource _sendFileCancellationTokenSource = new CancellationTokenSource();
 
-        private readonly SmtspContent _content;
+        private readonly SmtspContentBase _content;
 
         public SendDialog(string filePath) : this()
         {
@@ -37,16 +37,16 @@ namespace DesktopApp.Dialogs
                 FileSize = fileStream.Length
             };
         }
-        
-        public SendDialog(SmtspContent content) : this()
+
+        public SendDialog(SmtspContentBase content) : this()
         {
             _content = content;
         }
 
         private SendDialog()
         {
-            _discovery = new Discovery(Config<ConfigFile>.Values.MyDeviceInfo, Config<ConfigFile>.Values.UseMdnsForDiscovery ? DiscoveryTypes.Mdns : DiscoveryTypes.UdpBroadcasts);
-            
+            _discovery = new Discovery(Config<ConfigFile>.Values.MyDeviceInfo);
+
             Title = "Send File";
             MinimumSize = new Size(SizeHelper.GetSize(300), SizeHelper.GetSize(300));
 
@@ -87,7 +87,7 @@ namespace DesktopApp.Dialogs
                         {
                             Key = deviceInfo.DeviceId,
                             Tag = deviceInfo,
-                            Text = $"{deviceInfo.DeviceName}"
+                            Text = $"{deviceInfo.DeviceName} ({deviceInfo.IpAddress})",
                         });
                     }
                     catch (Exception exception)
