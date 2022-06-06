@@ -169,39 +169,3 @@ jobs:
           ${{ github.workspace }}/downloads/linux-binary/InterShare.Linux-${{ github.event.inputs.version }}.tar.gz
           ${{ github.workspace }}/downloads/macOS/InterShare.macOS-${{ github.event.inputs.version }}.zip
           ${{ github.workspace }}/downloads/windows/InterShare.Windows-${{ github.event.inputs.version }}.zip
-
-  upload:
-    runs-on: ubuntu-latest
-    environment: Deployment
-    name: Upload to server
-    needs: [create-release]
-    steps:
-
-    - name: Download artifacts
-      uses: actions/download-artifact@v3
-      with:
-        path: ${{ github.workspace }}/downloads
-
-    - name: FTP Upload
-      uses: sebastianpopp/ftp-action@releases/v2
-      with:
-        host: ${{ secrets.FTP_SERVER }}
-        user: ${{ secrets.FTP_USER }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        localDir: ${{ github.workspace }}/downloads
-        options: "--delete"
-
-    - name: Create version file
-      env:
-        VERSION: ${{ github.event.inputs.version }}
-      run: |
-        mkdir -p ${{ github.workspace }}/versions;
-        echo "{ \"macOS\": \"$VERSION\", \"linux\": \"$VERSION\", \"windows\": \"$VERSION\" }" >> ${{ github.workspace }}/versions/desktop-versions.json
-
-    - name: FTP Upload version file
-      uses: sebastianpopp/ftp-action@releases/v2
-      with:
-        host: ${{ secrets.FTP_SERVER }}
-        user: ${{ secrets.FTP_USER }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        localDir: ${{ github.workspace }}/versions
