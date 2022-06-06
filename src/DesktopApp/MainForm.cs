@@ -111,7 +111,7 @@ namespace DesktopApp
                         Type = SeparatorToolItemType.FlexibleSpace
                     },
                     startPageButton,
-                    contactsButton,
+                    // contactsButton,
                     settingsButton
                 }
             };
