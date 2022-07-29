@@ -9,7 +9,7 @@ namespace DesktopApp.Extensions
     {
         public static async Task CopyToAsyncWithProgress(this Stream source, Stream destination, IProgress<long> progress, CancellationToken cancellationToken = default, int bufferSize = 81920)
         {
-            var buffer = new byte[bufferSize];
+            byte[]? buffer = new byte[bufferSize];
             int bytesRead;
             long totalRead = 0;
 

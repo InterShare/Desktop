@@ -78,7 +78,6 @@ namespace DesktopApp.Dialogs
                 }
 
                 SendClicked.Invoke(ipAddress, port);
-
             }
         }
 

@@ -6,7 +6,6 @@ namespace DesktopApp.Core
     {
         public static void Initialize()
         {
-
             // var container = new ServiceCollection();
             // container.AddSingleton<IDiscoveryService, DiscoveryService>();
             //

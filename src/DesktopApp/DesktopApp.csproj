@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Eto.Forms" Version="2.7.0" />
-    <PackageReference Include="SMTSP" Version="2.1.0-beta" />
+<!--    <PackageReference Include="SMTSP" Version="2.1.0-beta" />-->
     <PackageReference Include="System.Reactive" Version="5.0.0" />
     <PackageReference Include="System.Text.Json" Version="6.0.2" />
     <PackageReference Include="TextCopy" Version="6.1.0" />
@@ -37,18 +37,17 @@
     <EmbeddedResource Include="Resources\clipboard.png" />
   </ItemGroup>
 
-<!--  <ItemGroup>-->
-<!--    <Reference Include="MDNS, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">-->
-<!--      <HintPath>..\..\..\SMTSP\src\SMTSP\bin\Debug\netstandard2.1\MDNS.dll</HintPath>-->
-<!--    </Reference>-->
-<!--    <Reference Include="SMTSP, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">-->
-<!--      <HintPath>..\..\..\SMTSP\src\SMTSP\bin\Debug\netstandard2.1\SMTSP.dll</HintPath>-->
-<!--    </Reference>-->
+  <ItemGroup>
+    <Reference Include="MDNS, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\SMTSP\src\SMTSP\bin\Debug\netstandard2.1\MDNS.dll</HintPath>
+    </Reference>
+    <Reference Include="SMTSP, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\SMTSP\src\SMTSP\bin\Debug\netstandard2.1\SMTSP.dll</HintPath>
+    </Reference>
 
-<!--    <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />-->
-<!--    <PackageReference Include="Common.Logging" Version="3.4.1" />-->
-<!--    <PackageReference Include="IPNetwork2" Version="2.1.2" />-->
-<!--    <PackageReference Include="Makaretu.Dns" Version="2.0.1" />-->
-<!--  </ItemGroup>-->
+    <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
+    <PackageReference Include="IPNetwork2" Version="2.1.2" />
+    <PackageReference Include="Makaretu.Dns" Version="2.0.1" />
+  </ItemGroup>
 
 </Project>

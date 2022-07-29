@@ -28,7 +28,7 @@ namespace DesktopApp.Core
             }
             catch(Exception)
             {
-                var output = "";
+                string? output = "";
 
                 foreach (NetworkInterface item in NetworkInterface.GetAllNetworkInterfaces())
                 {
