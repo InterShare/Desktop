@@ -125,7 +125,7 @@ namespace DesktopApp
                     Config<ConfigFile>.Values.DeviceIdentifier,
                     Config<ConfigFile>.Values.DeviceName,
                     DeviceTypes.Computer,
-                    Array.Empty<string>()
+                    new []{ "InterShare" }
                 );
                 
                 var smtspReceiver = new SmtspReceiver(Config<ConfigFile>.Values.MyDeviceInfo);
