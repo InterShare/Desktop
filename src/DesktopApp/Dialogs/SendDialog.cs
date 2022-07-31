@@ -103,7 +103,7 @@ namespace DesktopApp.Dialogs
             try
             {
                 _sendFileCancellationTokenSource.Cancel();
-                _discovery.Dispose();
+                _discovery.StopDiscovering();
                 Close();
             }
             catch (Exception exception)
