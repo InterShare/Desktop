@@ -65,14 +65,14 @@ namespace DesktopApp.Pages
             _contacts = Config<ConfigFile>.Values.Contacts;
             _contacts.CollectionChanged += ContactsChanged;
 
-            foreach (var s in _subscribedContacts)
+            foreach (IDisposable? s in _subscribedContacts)
             {
                 s.Dispose();
             }
 
             _subscribedContacts.Clear();
 
-            foreach (var contact in _contacts)
+            foreach (Contact? contact in _contacts)
             {
                 _subscribedContacts.Add(
                     contact.AlwaysAllowReceivingContentObservable.Subscribe(x =>

@@ -14,7 +14,7 @@ using DesktopApp.Services;
 using Eto.Drawing;
 using Eto.Forms;
 using SMTSP;
-using SMTSP.Advertisement;
+using SMTSP.Discovery;
 using SMTSP.Discovery.Entities;
 using SMTSP.Entities;
 using SMTSP.Entities.Content;
@@ -25,13 +25,13 @@ namespace DesktopApp
 {
     public sealed class MainForm : Form
     {
-        private Advertiser? _advertiser;
         private readonly StartPage _startPage;
         private readonly SettingsPage _settingsPage;
         private readonly ContactsPage _contactsPage;
 
-        public static MainForm Reference { get; set; }
-        public static IVersionService VersionService { get; private set; }
+        public static MainForm Reference { get; set; } = null!;
+        public static IVersionService VersionService { get; private set; } = null!;
+        public static DeviceDiscovery? DeviceDiscovery { get; private set; }
 
         public MainForm(IVersionService versionService)
         {
@@ -62,8 +62,8 @@ namespace DesktopApp
 
         private void OnClosed(object sender, EventArgs e)
         {
-            _advertiser?.StopAdvertising();
-            _advertiser?.Dispose();
+            DeviceDiscovery?.StopAdvertising();
+            DeviceDiscovery?.Dispose();
         }
 
         private ToolBar CreateToolbar()
@@ -121,24 +121,23 @@ namespace DesktopApp
         {
             try
             {
-                var smtspReceiver = new SmtspReceiver();
+                Config<ConfigFile>.Values.MyDeviceInfo = new DeviceInfo(
+                    Config<ConfigFile>.Values.DeviceIdentifier,
+                    Config<ConfigFile>.Values.DeviceName,
+                    DeviceTypes.Computer,
+                    new []{ "InterShare" }
+                );
+                
+                var smtspReceiver = new SmtspReceiver(Config<ConfigFile>.Values.MyDeviceInfo);
                 smtspReceiver.StartReceiving();
 
                 smtspReceiver.RegisterTransferRequestCallback(OnTransferRequestCallback);
                 smtspReceiver.OnContentReceive += OnContentReceived;
 
-                Config<ConfigFile>.Values.MyDeviceInfo = new DeviceInfo()
-                {
-                    DeviceId = Config<ConfigFile>.Values.DeviceIdentifier,
-                    DeviceName =  Config<ConfigFile>.Values.DeviceName,
-                    DeviceType = DeviceTypes.Computer,
-                    Port = ushort.Parse(smtspReceiver.Port.ToString())
-                };
+                StartPage.ChangeDeviceInfo(Config<ConfigFile>.Values.MyDeviceInfo.TcpPort);
 
-                StartPage.ChangeDeviceInfo(Config<ConfigFile>.Values.MyDeviceInfo.Port);
-
-                _advertiser = new Advertiser(Config<ConfigFile>.Values.MyDeviceInfo);
-                _advertiser.Advertise();
+                DeviceDiscovery = new DeviceDiscovery(Config<ConfigFile>.Values.MyDeviceInfo);
+                DeviceDiscovery.Advertise();
             }
             catch (Exception exception)
             {
@@ -192,7 +191,7 @@ namespace DesktopApp
 
                 while(File.Exists(newFullPath))
                 {
-                    var tempFileName = $"{fileNameOnly} ({count++})";
+                    string tempFileName = $"{fileNameOnly} ({count++})";
                     newFullPath = Path.Combine(path, tempFileName + extension);
                 }
 
@@ -215,7 +214,10 @@ namespace DesktopApp
 
                 try
                 {
-                    await file.DataStream.CopyToAsyncWithProgress(fileStream, progress, cancellationTokenSource.Token);
+                    if (file.DataStream != null)
+                    {
+                        await file.DataStream.CopyToAsyncWithProgress(fileStream, progress, cancellationTokenSource.Token);
+                    }
                 }
                 catch (TaskCanceledException)
                 {
@@ -256,7 +258,7 @@ namespace DesktopApp
             }
             catch (Exception exception)
             {
-
+                // ignored
             }
         }
 
@@ -273,9 +275,9 @@ namespace DesktopApp
                     return Task.FromResult(true);
                 }
 
-                var contentIsFile = transferRequest.ContentBase is SmtspFileContent;
+                bool contentIsFile = transferRequest.ContentBase is SmtspFileContent;
 
-                var msgText = contentIsFile
+                string msgText = contentIsFile
                     ? $"{transferRequest.SenderName}\n wants to send you \"{((SmtspFileContent) transferRequest.ContentBase).FileName}\"\nAccept?"
                     : $"{transferRequest.SenderName}\n wants to share the clipboard with you\nAccept?";
 

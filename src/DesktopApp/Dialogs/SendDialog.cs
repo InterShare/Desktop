@@ -17,7 +17,7 @@ namespace DesktopApp.Dialogs
 {
     public class SendDialog : Dialog
     {
-        private readonly Discovery _discovery;
+        private readonly DeviceDiscovery _discovery;
         private readonly List<DeviceInfo> _devices = new ();
         private readonly ListBox _listBox;
         private readonly ProgressBar _progressBar = new ProgressBar();
@@ -28,8 +28,8 @@ namespace DesktopApp.Dialogs
 
         public SendDialog(string filePath) : this()
         {
-            var fileName  = Path.GetFileName(filePath);
-            var fileStream  = File.OpenRead(filePath);
+            string? fileName  = Path.GetFileName(filePath);
+            FileStream fileStream  = File.OpenRead(filePath);
             _content = new SmtspFileContent
             {
                 DataStream = fileStream,
@@ -45,7 +45,7 @@ namespace DesktopApp.Dialogs
 
         private SendDialog()
         {
-            _discovery = new Discovery(Config<ConfigFile>.Values.MyDeviceInfo);
+            _discovery = MainForm.DeviceDiscovery!;
 
             Title = "Send File";
             MinimumSize = new Size(SizeHelper.GetSize(300), SizeHelper.GetSize(300));
@@ -56,7 +56,7 @@ namespace DesktopApp.Dialogs
             ShowList();
 
             _discovery.DiscoveredDevices.CollectionChanged += DiscoveredDevicesOnCollectionChanged;
-            _discovery.SendOutLookupSignal();
+            _discovery.StartDiscovering();
             DiscoveredDevicesOnCollectionChanged(null, null);
 
             AbortButton = new Button { Text = "C&ancel" };
@@ -103,7 +103,7 @@ namespace DesktopApp.Dialogs
             try
             {
                 _sendFileCancellationTokenSource.Cancel();
-                _discovery.Dispose();
+                _discovery.StopDiscovering();
                 Close();
             }
             catch (Exception exception)
@@ -204,11 +204,7 @@ namespace DesktopApp.Dialogs
 
             dialog.SendClicked += async delegate(string address, ushort port)
             {
-                var deviceInfo = new DeviceInfo
-                {
-                    IpAddress = address,
-                    Port = port
-                };
+                var deviceInfo = new DeviceInfo("", "", port, "", address, Array.Empty<string>());
 
                 await SendContent(deviceInfo);
             };
@@ -254,13 +250,13 @@ namespace DesktopApp.Dialogs
                     }
                 };
 
-                SendFileResponses result = await SmtspSender.SendFile(deviceInfo,
+                SendResponses result = await SmtspSender.Send(deviceInfo,
                     _content,
                     Config<ConfigFile>.Values.MyDeviceInfo,
                     progress,
                     _sendFileCancellationTokenSource.Token);
 
-                if (result == SendFileResponses.Denied)
+                if (result == SendResponses.Denied)
                 {
                     MessageBox.Show(this, "The receiver declined the file", "Declined", MessageBoxButtons.OK);
                     ShowList();
